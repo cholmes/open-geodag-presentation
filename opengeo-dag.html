@@ -23,20 +23,22 @@
   "Finally: sovereignty. We've seen a growing and important movement toward sovereign software to have control over the full stack of software and services within a country. I believe this matters deeply, and I'm glad it's gaining traction here in Europe. SDI's should not be dependent on foreign clouds and software vendors.",
   "So that's my take on what a better SDI would look like. For the past several years, an incredible global community has been building a new way of working with geospatial data. We call it cloud-native geospatial. At its heart is a set of formats that eliminate the need for a server — instead, they leverage the intrinsic capabilities of cloud storage to serve data efficiently, at scale. I believe these provide the right foundation to fundamentally upgrade how SDI's work. Let me give you a quick tour of the key formats.",
   "Cloud Optimized GeoTIFF's proved out this approach of streaming geospatial data on the cloud instead of passing it around or requiring a big web server.",
-  "Zarr is the format for large multidimensional arrays — think climate models, satellite time series, oceanographic data. It chunks and indexes data so that you can stream just a slice of a massive dataset without downloading the whole thing. It's becoming the standard for scientific raster data at scale.",
-  "Cloud-Optimized Point Cloud — COPC — does for LiDAR what COG does for rasters. The Netherlands has some of the world's best LiDAR coverage with AHN. COPC makes that data streamable directly from object storage, without a server, without preprocessing for each request.",
-  "PMTiles is a single-file archive format for map tiles — vector or raster. Instead of a tile server generating tiles on demand, you have one file on S3 that any client can read with range requests. Deploy a fully interactive web map with zero server infrastructure.",
-  "GeoParquet is the one I'm most excited about for SDI. It's the geospatial extension of Apache Parquet — a columnar format that tools like DuckDB, Snowflake, BigQuery, and Pandas can query directly. You can run SQL on a GeoParquet file sitting on S3 without any server. This is the format that makes AI integration completely natural.",
-  "STAC — the SpatioTemporal Asset Catalog — is the glue that holds it all together. It's a simple JSON standard for describing geospatial assets. STAC gives you searchable, machine-readable metadata for all your COGs, GeoParquets, and point clouds. It's also what enables AI to understand what data you have and what it means.",
-  "So we have these powerful formats. They've mostly been used independently — COG for better raster distribution, STAC for satellite imagery catalogs. But what if we brought them all together into a coherent architecture for SDI? That's what Portolan is.",
-  "This is Portolan. I'll now do a live demonstration — but let me flag the key things to watch for. First: it's fully interactive. Second: everything you see is powered by files on object storage — there is no server running. Third: an AI can query this data directly, right now. And fourth: all of this was set up with a few command-line instructions.",
-  "What you just saw is Portolan. Named for the medieval nautical charts that first made reliable coastal navigation possible — detailed, practical maps built from accumulated knowledge, not speculation. Portolan is a complete, open-source architecture for Spatial Data Infrastructure built entirely on cloud-native formats. No proprietary servers. No complex deployment pipelines. Just files, open standards, and object storage.",
+  "Zarr excels at multi-dimensional data, and there's now petabytes of data on weather & climate modeling.",
+  "COPC is a bit newer, and uses the exact same COG playbook - take an established format and organize it better for the cloud.",
+  "GeoParquet is the cloud-native format for vector data. It's the geospatial extension of Apache Parquet — the most popular columnar format in the data world. Tools like DuckDB, Pandas, BigQuery, and Snowflake read it natively, so you can run SQL directly on a GeoParquet file sitting in object storage. No server, no database — just analysis-ready vector data.",
+  "PMTiles is the visualization complement to the analysis formats. Where GeoParquet and COG are about querying and processing data, PMTiles is about displaying it. It packages all your map tiles into a single file that clients read directly from storage — no tile server needed. Upload one file and you have a fully interactive web map.",
+  "STAC is the metadata layer that ties everything together. It's simple JSON that describes any cloud-native geospatial asset — a COG, a GeoParquet file, a point cloud. You can search STAC collections through a standard API, or go fully serverless with STAC-GeoParquet, which puts the entire catalog into a queryable file on object storage.",
+  "So we have these powerful formats. They've mostly been used independently — COG for better raster distribution, STAC for satellite imagery catalogs. But what if we brought them all together into a coherent architecture for SDI?",
+  "We decided to go beyond just a thought experiment, leveraging claude to build a complete set of tools to prove out this concept. This idea is quite centered in the Netherlands, with a collaborator named Nissim who is based in The Hague leading the charge. I'm going to share some super early demos of what we've built, and then conclude with the ways that this approach can build a better SDI.",
+  "I'll now do a live demonstration — but let me flag the key things to watch for. First: it's fully interactive. Second: everything you see is powered by files on object storage — there is no server running. Third: an AI can query this data directly, right now. And fourth: all of this was set up with a few command-line instructions.",
   "So you've seen Portolan in action. Let me now go back to our five requirements and show how Portolan answers each one.",
-  "Portolan is built around simple text files and command-line tools — which is exactly what AI wants to work with. STAC metadata gives AI agents a structured understanding of what data exists and what it means. GeoParquet with DuckDB lets an LLM run SQL directly against your spatial data. The deep interoperability work done for INSPIRE doesn't go to waste — it gets extracted into structured metadata that AI can reason about.",
-  "The CLI makes onboarding straightforward. You point it at your files — a folder of shapefiles, a WFS endpoint, an ArcGIS service — and it converts them, generates metadata, and pushes to storage. AI coding tools are exceptionally good at working with command-line tools and structured files, so non-technical staff can set up a Portolan node with AI assistance. And once the data is in standard formats, the browser and visualization come for free.",
-  "With Portolan, there are no servers to maintain. No GeoServer. No ArcGIS Online. No clusters that need more instances when traffic spikes. Scalability is entirely handled by your cloud storage provider — and object storage is consistently the most robust, proven, and scalable layer any cloud provider offers. A single Portolan node could handle millions of requests simultaneously.",
-  "The cost model is simple: storage and egress, nothing else. For a municipality with primarily vector data — a few GeoParquet files — we're talking a few euros a month. A regional authority with aerial imagery and LiDAR might pay fifty to a hundred euros a month. Compare that to server infrastructure, licensing, and staff time. And if a dataset becomes very popular, you can enable requester-pays.",
-  "Portolan has no geospatial server software at all — so there's nothing from a foreign vendor in the critical path of your data infrastructure. Everything is 100% open source. And here's the crucial point: when people hear 'cloud-native' they assume it means AWS or Azure. It doesn't. This architecture is built on the most commoditized layer of cloud computing — S3-compatible object storage. There are now multiple European providers. That's all Portolan needs.",
+  "Portolan is built around simple text documents and command-line tools, which is exactly what AI wants to interact with. We can extract all the deep interoperability work done on INSPIRE and other harmonization efforts to simpler files that direct AI on how to make use of the data.",
+  "Getting the data is seamless and efficient — talking to Parquet with tools like DuckDB enables LLMs to directly analyze the data and build interesting applications. The core accessibility and AI-first design make it much easier to incorporate into world models, geospatial foundation models, and agentic tools.",
+  "The simple core and AI-first nature of Portolan means it works super well with AI tooling. Command-line tools and static text files are where AI coding tools shine — you can use Claude or similar tools to point at files and it will easily translate them into the structure of Portolan.",
+  "The standardized core means other tools can interact with it easily. You get a great data browser and map for free. I believe this ecosystem will rapidly develop more capabilities so you have fully interactive tools for users with very little effort.",
+  "With Portolan there are no servers to run at all. No ArcGIS Online, no GeoServer — everything is just stored on cloud storage buckets. There are no clusters to maintain, and these could easily scale to handle millions of requests since there is no server at all.",
+  "There are only two costs to run a Portolan SDI — storage and egress. Storage is incredibly cheap for vector data, on the order of dollars per month. Large raster sets can cost more, but it's a fraction of the price of running a server. You can also turn on requester-pays, and Source Cooperative will host open government data for free.",
+  "A Portolan implementation doesn't depend on any foreign vendor for geospatial software since there are no servers and everything is open source. The key point is that even the cloud storage layer can be fully sovereign. Cloud-native doesn't mean big cloud — this architecture just needs S3-compatible storage, and there are now many European providers.",
   "Portolan is an open-source, community-governed project — no single organization controls it. We are looking for early adopters who want to help prove the model. The Netherlands is the ideal place to do this. You have strong open data culture, technical capacity, and geospatial ambition. A Dutch government Portolan implementation would be the first real proof point — and a model for SDIs across Europe. We'd love to work with you."
 ]
 </script>
@@ -1087,32 +1089,8 @@
     </div>
   </section>
 
-  <!-- ⑭ PMTiles -->
-  <section class="slide-dark" data-label="17 PMTiles">
-    <div class="format-split">
-      <div class="format-split-left">
-        <div>
-          <div class="format-split-logo" style="flex-direction:row; align-items:center; gap:28px;">
-            <img src="uploads/pmtiles_logo.svg" alt="PMTiles logo" style="height:90px; width:auto; object-fit:contain; flex-shrink:0;">
-            <div>
-              <div style="font-size:68px; font-weight:700; color:var(--white); letter-spacing:-0.02em; line-height:1;">PMTiles</div>
-              <div style="font-size:24px; font-weight:400; color:oklch(55% 0.02 240); text-transform:uppercase; letter-spacing:0.1em; margin-top:6px;">Single-File Map Tile Archive</div>
-            </div>
-          </div>
-        </div>
-        <div class="format-split-bullets">
-          <div class="format-split-bullet">One file on object storage serves all vector and raster map tiles via HTTP range requests — no tile server.</div>
-          <div class="format-split-bullet">Deploy a fully interactive web map with zero infrastructure — just a file on S3.</div>
-        </div>
-      </div>
-      <div class="format-split-right">
-        <img src="uploads/pmtiles-overture.gif" alt="PMTiles demo">
-      </div>
-    </div>
-  </section>
-
-  <!-- ⑮ GeoParquet -->
-  <section class="slide-dark2" data-label="18 GeoParquet">
+  <!-- ⑭ GeoParquet -->
+  <section class="slide-dark2" data-label="17 GeoParquet">
     <div class="format-split">
       <div class="format-split-left">
         <div>
@@ -1127,12 +1105,36 @@
           </div>
         </div>
         <div class="format-split-bullets">
-          <div class="format-split-bullet">Query spatial data directly from DuckDB, BigQuery, or Pandas — no server, just SQL on a file in S3.</div>
-          <div class="format-split-bullet">The format that makes AI integration with spatial data completely natural.</div>
+          <div class="format-split-bullet">The cloud-native format for vector data analysis — query with SQL, no server needed.</div>
+          <div class="format-split-bullet">Tools like DuckDB and Pandas read it natively, making AI integration natural.</div>
         </div>
       </div>
       <div class="format-split-right">
         <img src="uploads/geoparquet-demo-resized.gif" alt="GeoParquet demo">
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑮ PMTiles -->
+  <section class="slide-dark" data-label="18 PMTiles">
+    <div class="format-split">
+      <div class="format-split-left">
+        <div>
+          <div class="format-split-logo" style="flex-direction:row; align-items:center; gap:28px;">
+            <img src="uploads/pmtiles_logo.svg" alt="PMTiles logo" style="height:90px; width:auto; object-fit:contain; flex-shrink:0;">
+            <div>
+              <div style="font-size:68px; font-weight:700; color:var(--white); letter-spacing:-0.02em; line-height:1;">PMTiles</div>
+              <div style="font-size:24px; font-weight:400; color:oklch(55% 0.02 240); text-transform:uppercase; letter-spacing:0.1em; margin-top:6px;">Single-File Map Tile Archive</div>
+            </div>
+          </div>
+        </div>
+        <div class="format-split-bullets">
+          <div class="format-split-bullet">Packages map tiles into one file for visualization — no tile server needed.</div>
+          <div class="format-split-bullet">Complements GeoParquet and COG: they handle analysis, PMTiles handles display.</div>
+        </div>
+      </div>
+      <div class="format-split-right">
+        <img src="uploads/pmtiles-overture.gif" alt="PMTiles demo">
       </div>
     </div>
   </section>
@@ -1153,8 +1155,8 @@
           </div>
         </div>
         <div class="format-split-bullets">
-          <div class="format-split-bullet">Simple JSON format that adds rich metadata to any cloud-native geospatial asset — making it searchable and AI-readable.</div>
-          <div class="format-split-bullet">STAC API 1.0 enables search of all records using the standard OGC Features API.</div>
+          <div class="format-split-bullet">Simple JSON format that adds metadata to any cloud-native format.</div>
+          <div class="format-split-bullet">Search collections and items with STAC API or serverless with STAC-GeoParquet.</div>
         </div>
       </div>
       <div class="format-split-right">
@@ -1179,8 +1181,40 @@
     </div>
   </section>
 
-  <!-- ⑱ DEMO -->
-  <section class="slide-dark" data-label="21 Demo" style="position:relative; align-items:center; justify-content:center;">
+  <!-- ⑱ PORTOLAN REVEAL -->
+  <section class="slide-dark" data-label="21 Portolan" style="position:relative;">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04;" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+      <defs>
+        <pattern id="grid3" width="80" height="80" patternUnits="userSpaceOnUse">
+          <path d="M 80 0 L 0 0 0 80" fill="none" stroke="white" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid3)"/>
+      <g transform="translate(1600,540)" stroke="white" stroke-width="0.8" opacity="0.6">
+        <line x1="0" y1="-480" x2="0" y2="480"/>
+        <line x1="-480" y1="0" x2="480" y2="0"/>
+        <line x1="-339" y1="-339" x2="339" y2="339"/>
+        <line x1="339" y1="-339" x2="-339" y2="339"/>
+        <circle cx="0" cy="0" r="120" fill="none"/>
+        <circle cx="0" cy="0" r="240" fill="none"/>
+        <circle cx="0" cy="0" r="360" fill="none"/>
+        <circle cx="0" cy="0" r="480" fill="none"/>
+      </g>
+    </svg>
+    <div style="flex:1; display:flex; flex-direction:column; padding:var(--pt) var(--px) var(--pb);">
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+        <div class="eyebrow" style="margin-bottom:36px;">Cloud-Native Spatial Data Infrastructure</div>
+        <div class="display" style="font-size:120px; margin-bottom:32px;">Portolan</div>
+        <div class="subtitle" style="max-width:780px;">A new foundation for sharing geospatial data — faster, cheaper, and built for the age of AI.</div>
+      </div>
+      <div style="display:flex; align-items:flex-end; justify-content:flex-end;">
+        <div class="muted small" style="font-family:var(--font-mono); text-align:right;">portolan-sdi.github.io</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑲ DEMO -->
+  <section class="slide-dark" data-label="22 Demo" style="position:relative; align-items:center; justify-content:center;">
     <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.05;" viewBox="0 0 1920 1080" preserveAspectRatio="none">
       <defs>
         <pattern id="grid2" width="80" height="80" patternUnits="userSpaceOnUse">
@@ -1206,39 +1240,6 @@
     </div>
   </section>
 
-  <!-- PORTOLAN REVEAL -->
-  <section class="slide-dark" data-label="22 Portolan" style="position:relative;">
-    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04;" viewBox="0 0 1920 1080" preserveAspectRatio="none">
-      <defs>
-        <pattern id="grid3" width="80" height="80" patternUnits="userSpaceOnUse">
-          <path d="M 80 0 L 0 0 0 80" fill="none" stroke="white" stroke-width="0.5"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#grid3)"/>
-      <g transform="translate(1600,540)" stroke="white" stroke-width="0.8" opacity="0.6">
-        <line x1="0" y1="-480" x2="0" y2="480"/>
-        <line x1="-480" y1="0" x2="480" y2="0"/>
-        <line x1="-339" y1="-339" x2="339" y2="339"/>
-        <line x1="339" y1="-339" x2="-339" y2="339"/>
-        <circle cx="0" cy="0" r="120" fill="none"/>
-        <circle cx="0" cy="0" r="240" fill="none"/>
-        <circle cx="0" cy="0" r="360" fill="none"/>
-        <circle cx="0" cy="0" r="480" fill="none"/>
-      </g>
-    </svg>
-    <div style="flex:1; display:flex; flex-direction:column; padding:var(--pt) var(--px) var(--pb);">
-      <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-        <div class="eyebrow" style="margin-bottom:36px;">Cloud-Native Spatial Data Infrastructure</div>
-        <div class="display" style="font-size:120px; margin-bottom:32px;">Portolan</div>
-        <div class="subtitle" style="max-width:780px;">A new foundation for sharing geospatial data — faster, cheaper, and built for the age of AI.</div>
-      </div>
-      <div style="display:flex; align-items:flex-end; justify-content:space-between;">
-        <div class="muted small">Open Geodag 2026 · May 12</div>
-        <div class="muted small" style="font-family:var(--font-mono); text-align:right;">portolan-sdi.github.io</div>
-      </div>
-    </div>
-  </section>
-
   <!-- ⑳ PORTOLAN REVISITED (section header) -->
   <section class="slide-gold" data-label="23 Portolan Revisited">
     <div class="pad-center">
@@ -1248,8 +1249,8 @@
     </div>
   </section>
 
-  <!-- ⑳ AI-FIRST (Portolan) -->
-  <section class="slide-dark" data-label="24 AI-First (Portolan)">
+  <!-- ⑳ AI-FIRST 1: Built for AI -->
+  <section class="slide-dark" data-label="24 Built for AI">
     <div class="slide-content">
       <div class="slide-header">
         <div class="pill-row">
@@ -1259,33 +1260,71 @@
           <div class="pill">Low Cost</div>
           <div class="pill">Sovereign</div>
         </div>
-        <div class="slide-title">AI-First</div>
+        <div class="slide-title">Built for AI</div>
       </div>
       <div class="slide-body" style="justify-content:center;">
-        <div class="cols-2" style="gap:40px;">
-          <div class="card">
-            <div class="card-label">STAC Metadata</div>
-            <div class="card-body">Structured, machine-readable descriptions of every dataset. AI agents know what you have and what it means — without asking.</div>
+        <div class="cols-2" style="gap:80px; align-items:center;">
+          <div class="format-split-bullets" style="gap:32px;">
+            <div class="format-split-bullet">Text files and CLI tools are exactly what AI wants to work with.</div>
+            <div class="format-split-bullet">STAC metadata lets agents understand your data without asking.</div>
           </div>
-          <div class="card">
-            <div class="card-label">GeoParquet + DuckDB</div>
-            <div class="card-body">LLMs run SQL directly against your spatial data. Build applications, answer analytical questions, generate maps — all from natural language.</div>
+          <svg viewBox="0 0 400 300" style="width:100%; max-width:480px;" fill="none">
+            <rect x="20" y="20" width="120" height="50" rx="8" fill="oklch(75% 0.16 75 / 0.2)" stroke="oklch(75% 0.16 75)" stroke-width="1.5"/>
+            <text x="80" y="50" text-anchor="middle" fill="oklch(75% 0.16 75)" font-size="16" font-weight="600" font-family="DM Sans">AI Agent</text>
+            <rect x="20" y="130" width="120" height="50" rx="8" fill="oklch(100% 0 0 / 0.06)" stroke="oklch(60% 0.02 240)" stroke-width="1"/>
+            <text x="80" y="160" text-anchor="middle" fill="oklch(85% 0.01 240)" font-size="14" font-family="DM Mono">STAC JSON</text>
+            <rect x="20" y="220" width="120" height="50" rx="8" fill="oklch(100% 0 0 / 0.06)" stroke="oklch(60% 0.02 240)" stroke-width="1"/>
+            <text x="80" y="250" text-anchor="middle" fill="oklch(85% 0.01 240)" font-size="14" font-family="DM Mono">GeoParquet</text>
+            <path d="M80 70 L80 130" stroke="oklch(75% 0.16 75 / 0.5)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+            <path d="M80 180 L80 220" stroke="oklch(75% 0.16 75 / 0.5)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+            <rect x="220" y="20" width="160" height="50" rx="8" fill="oklch(100% 0 0 / 0.06)" stroke="oklch(60% 0.02 240)" stroke-width="1"/>
+            <text x="300" y="50" text-anchor="middle" fill="oklch(85% 0.01 240)" font-size="14" font-family="DM Mono">INSPIRE schemas</text>
+            <path d="M300 70 L300 120 L140 155" stroke="oklch(75% 0.16 75 / 0.3)" stroke-width="1" stroke-dasharray="6 4"/>
+            <text x="260" y="108" fill="oklch(60% 0.02 240)" font-size="11" font-family="DM Sans">extracted as metadata</text>
+            <rect x="220" y="180" width="160" height="90" rx="8" fill="oklch(75% 0.16 75 / 0.1)" stroke="oklch(75% 0.16 75 / 0.3)" stroke-width="1"/>
+            <text x="300" y="215" text-anchor="middle" fill="oklch(75% 0.16 75)" font-size="13" font-weight="500" font-family="DM Sans">Foundation Models</text>
+            <text x="300" y="240" text-anchor="middle" fill="oklch(60% 0.02 240)" font-size="12" font-family="DM Sans">World models · Agents</text>
+            <path d="M140 245 L220 225" stroke="oklch(75% 0.16 75 / 0.3)" stroke-width="1" stroke-dasharray="6 4"/>
+            <defs><marker id="arrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="oklch(75% 0.16 75 / 0.5)"/></marker></defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ㉑ AI-FIRST 2: AI Queries Your Data -->
+  <section class="slide-dark2" data-label="25 AI Queries Your Data">
+    <div class="slide-content">
+      <div class="slide-header">
+        <div class="pill-row">
+          <div class="pill active">AI-First ✓</div>
+          <div class="pill">Easy to Implement</div>
+          <div class="pill">Scalable</div>
+          <div class="pill">Low Cost</div>
+          <div class="pill">Sovereign</div>
+        </div>
+        <div class="slide-title">AI Queries Your Data</div>
+      </div>
+      <div class="slide-body" style="justify-content:center;">
+        <div class="cols-2" style="gap:80px; align-items:center;">
+          <div class="format-split-bullets" style="gap:32px;">
+            <div class="format-split-bullet">LLMs query GeoParquet directly via DuckDB — no server needed.</div>
+            <div class="format-split-bullet">Natural foundation for world models and agentic workflows.</div>
           </div>
-          <div class="card">
-            <div class="card-label">INSPIRE as Metadata</div>
-            <div class="card-body">All the deep harmonization work done for INSPIRE gets preserved as structured metadata that AI can reason about — not locked in service configs.</div>
-          </div>
-          <div class="card">
-            <div class="card-label">Foundation Model Ready</div>
-            <div class="card-body">Standard formats and open metadata make Portolan nodes straightforward inputs to geospatial foundation models and agentic workflows.</div>
+          <div style="background:oklch(100% 0 0 / 0.06); border-radius:10px; padding:36px; font-family:var(--font-mono); font-size:22px; color:var(--gold); line-height:2.2;">
+            <span style="color:oklch(55% 0.02 240);">-- AI-generated query</span><br>
+            SELECT name, geom<br>
+            &nbsp;&nbsp;FROM 's3://sdi/parcels.parquet'<br>
+            &nbsp;&nbsp;WHERE ST_Within(geom,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;ST_Buffer(ST_Point(4.3, 52.1), 0.01));
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ㉑ EASY TO IMPLEMENT (Portolan) -->
-  <section class="slide-dark2" data-label="25 Easy to Implement (Portolan)">
+  <!-- ㉒ EASY TO IMPLEMENT 1: Point, Convert, Push -->
+  <section class="slide-dark" data-label="26 Point, Convert, Push">
     <div class="slide-content">
       <div class="slide-header">
         <div class="pill-row">
@@ -1295,38 +1334,68 @@
           <div class="pill">Low Cost</div>
           <div class="pill">Sovereign</div>
         </div>
-        <div class="slide-title">Easy to Implement</div>
+        <div class="slide-title">Point, Convert, Push</div>
       </div>
       <div class="slide-body" style="justify-content:center;">
-        <div class="cols-2" style="gap:72px; align-items:center;">
-          <div style="display:flex; flex-direction:column; gap:28px;">
-            <div class="body" style="color:oklch(83% 0.01 240); line-height:1.6;">
-              Point the CLI at your files — shapefiles, a WFS endpoint, an ArcGIS service — and it converts, generates metadata, and pushes to storage.
-            </div>
-            <div style="background:oklch(100% 0 0 / 0.06); border-radius:10px; padding:32px; font-family:var(--font-mono); font-size:var(--t-small); color:var(--gold); line-height:2;">
-              portolan init<br>
-              portolan add demographics/<br>
-              portolan check --fix<br>
-              portolan push s3://my-bucket/
-            </div>
+        <div class="cols-2" style="gap:80px; align-items:center;">
+          <div style="background:oklch(100% 0 0 / 0.06); border-radius:10px; padding:36px; font-family:var(--font-mono); font-size:22px; color:var(--gold); line-height:2.2;">
+            portolan init<br>
+            portolan add demographics/<br>
+            portolan check --fix<br>
+            portolan push s3://my-bucket/
           </div>
-          <div style="display:flex; flex-direction:column; gap:24px;">
-            <div class="card">
-              <div class="card-label">AI-Assisted Setup</div>
-              <div class="card-body">CLI tools + text files are exactly where AI coding tools excel. Non-technical staff can set up a Portolan node with AI assistance.</div>
-            </div>
-            <div class="card">
-              <div class="card-label">Browser for Free</div>
-              <div class="card-body">Standard formats mean the data browser and visualization come automatically — no portal to build.</div>
-            </div>
+          <div class="format-split-bullets" style="gap:32px;">
+            <div class="format-split-bullet">CLI converts shapefiles, WFS, or ArcGIS into cloud-native formats.</div>
+            <div class="format-split-bullet">AI coding tools excel at CLI + text files — non-experts can set up nodes.</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ㉒ SCALABILITY (Portolan) -->
-  <section class="slide-dark" data-label="26 Scalability (Portolan)">
+  <!-- ㉓ EASY TO IMPLEMENT 2: Ecosystem for Free -->
+  <section class="slide-dark2" data-label="27 Ecosystem for Free">
+    <div class="slide-content">
+      <div class="slide-header">
+        <div class="pill-row">
+          <div class="pill">AI-First ✓</div>
+          <div class="pill active">Easy to Implement ✓</div>
+          <div class="pill">Scalable</div>
+          <div class="pill">Low Cost</div>
+          <div class="pill">Sovereign</div>
+        </div>
+        <div class="slide-title">Ecosystem for Free</div>
+      </div>
+      <div class="slide-body" style="justify-content:center;">
+        <div class="cols-2" style="gap:80px; align-items:center;">
+          <div class="format-split-bullets" style="gap:32px;">
+            <div class="format-split-bullet">Standard formats mean a data browser and map come automatically.</div>
+            <div class="format-split-bullet">Growing ecosystem will rapidly deliver more interactive tools.</div>
+          </div>
+          <svg viewBox="0 0 360 280" style="width:100%; max-width:440px;" fill="none">
+            <rect x="80" y="10" width="200" height="44" rx="8" fill="oklch(100% 0 0 / 0.06)" stroke="oklch(60% 0.02 240)" stroke-width="1"/>
+            <text x="180" y="37" text-anchor="middle" fill="oklch(85% 0.01 240)" font-size="15" font-family="DM Mono">GeoParquet · COG · STAC</text>
+            <path d="M180 54 L180 90" stroke="oklch(75% 0.16 75 / 0.5)" stroke-width="1.5" marker-end="url(#arrowG)"/>
+            <rect x="60" y="90" width="240" height="44" rx="8" fill="oklch(75% 0.16 75 / 0.15)" stroke="oklch(75% 0.16 75 / 0.5)" stroke-width="1.5"/>
+            <text x="180" y="117" text-anchor="middle" fill="oklch(75% 0.16 75)" font-size="15" font-weight="600" font-family="DM Sans">Portolan Browser</text>
+            <path d="M120 134 L80 170" stroke="oklch(75% 0.16 75 / 0.3)" stroke-width="1"/>
+            <path d="M180 134 L180 170" stroke="oklch(75% 0.16 75 / 0.3)" stroke-width="1"/>
+            <path d="M240 134 L280 170" stroke="oklch(75% 0.16 75 / 0.3)" stroke-width="1"/>
+            <rect x="30" y="170" width="100" height="36" rx="6" fill="oklch(100% 0 0 / 0.04)" stroke="oklch(60% 0.02 240 / 0.5)" stroke-width="1"/>
+            <text x="80" y="193" text-anchor="middle" fill="oklch(70% 0.015 240)" font-size="13" font-family="DM Sans">Data Viewer</text>
+            <rect x="140" y="170" width="80" height="36" rx="6" fill="oklch(100% 0 0 / 0.04)" stroke="oklch(60% 0.02 240 / 0.5)" stroke-width="1"/>
+            <text x="180" y="193" text-anchor="middle" fill="oklch(70% 0.015 240)" font-size="13" font-family="DM Sans">Map</text>
+            <rect x="230" y="170" width="100" height="36" rx="6" fill="oklch(100% 0 0 / 0.04)" stroke="oklch(60% 0.02 240 / 0.5)" stroke-width="1"/>
+            <text x="280" y="193" text-anchor="middle" fill="oklch(70% 0.015 240)" font-size="13" font-family="DM Sans">AI Chat</text>
+            <text x="180" y="250" text-anchor="middle" fill="oklch(50% 0.02 240)" font-size="12" font-style="italic" font-family="DM Sans">All generated automatically from standard formats</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ㉔ SCALABILITY (Portolan) -->
+  <section class="slide-dark" data-label="28 Scalability">
     <div class="slide-content">
       <div class="slide-header">
         <div class="pill-row">
@@ -1340,19 +1409,16 @@
       </div>
       <div class="slide-body" style="justify-content:center;">
         <div class="cols-2" style="gap:80px; align-items:center;">
-          <div class="intro-body" style="font-size:30px;">
-            No servers to run at all. No GeoServer. No ArcGIS Online. No clusters that need extra instances when traffic spikes.
-            <br><br>
-            Scalability is entirely handled by your cloud storage provider — and object storage is the most proven, robust layer any cloud provider offers.
-            <br><br>
-            A single Portolan node could handle <strong>millions of concurrent requests</strong>.
+          <div class="format-split-bullets" style="gap:32px;">
+            <div class="format-split-bullet">No servers — scalability handled entirely by cloud storage.</div>
+            <div class="format-split-bullet">Object storage is the most robust, proven layer any cloud offers.</div>
           </div>
           <div class="stat-block" style="align-items:flex-start;">
             <div class="stat-num" style="font-size:100px;">0</div>
             <div class="stat-label">servers to maintain</div>
             <div style="height:32px;"></div>
             <div class="stat-num" style="font-size:100px;">∞</div>
-            <div class="stat-label">theoretical concurrent requests</div>
+            <div class="stat-label">concurrent requests</div>
           </div>
         </div>
       </div>
@@ -1420,8 +1486,8 @@
     </div>
   </section>
 
-  <!-- ㉔ SOVEREIGNTY (Portolan) -->
-  <section class="slide-dark2" data-label="28 Sovereignty (Portolan)">
+  <!-- ㉖ SOVEREIGNTY (Portolan) -->
+  <section class="slide-dark2" data-label="30 Sovereignty">
     <div class="slide-content">
       <div class="slide-header">
         <div class="pill-row">
@@ -1434,26 +1500,32 @@
         <div class="slide-title">Sovereignty</div>
       </div>
       <div class="slide-body" style="justify-content:center;">
-        <div class="cols-2" style="gap:72px; align-items:start;">
-          <div style="display:flex; flex-direction:column; gap:24px;">
-            <div class="body" style="color:oklch(83% 0.01 240); line-height:1.6;">
-              No geospatial server software at all — so no foreign vendor in the critical path. Everything is <strong style="color:var(--white);">100% open source</strong>.
-            </div>
-            <div class="card">
-              <div class="card-label">On European Storage</div>
-              <div class="card-body">This architecture requires only S3-compatible object storage — the most commoditized layer of cloud. There are now multiple European providers. That's all Portolan needs.</div>
-            </div>
+        <div class="cols-2" style="gap:80px; align-items:center;">
+          <div class="format-split-bullets" style="gap:32px;">
+            <div class="format-split-bullet">No foreign vendor in the stack — 100% open source, no servers.</div>
+            <div class="format-split-bullet">Cloud-native just needs S3-compatible storage — many European providers qualify.</div>
           </div>
-          <div style="display:flex; flex-direction:column; gap:24px;">
-            <div class="card">
-              <div class="card-label">Cloud-Native ≠ Big Cloud</div>
-              <div class="card-body">People hear "cloud-native" and assume AWS or Azure. Portolan runs on MinIO, Cloudflare R2, Hetzner, or any S3-compatible storage — including on-premise.</div>
-            </div>
-            <div class="card">
-              <div class="card-label">Open Governance</div>
-              <div class="card-body">Portolan is community-governed. No single organization controls it. Apache 2.0 license. Open decision-making from day one.</div>
-            </div>
-          </div>
+          <svg viewBox="0 0 320 300" style="width:100%; max-width:400px;" fill="none">
+            <circle cx="160" cy="120" r="90" fill="oklch(75% 0.16 75 / 0.08)" stroke="oklch(75% 0.16 75 / 0.4)" stroke-width="1.5"/>
+            <g transform="translate(160,100)">
+              <circle cx="0" cy="-20" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="19" cy="-6" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="12" cy="16" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="-12" cy="16" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="-19" cy="-6" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="0" cy="-40" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="38" cy="-12" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="24" cy="32" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="-24" cy="32" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="-38" cy="-12" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="10" cy="-32" r="4" fill="oklch(75% 0.16 75)"/>
+              <circle cx="-10" cy="-32" r="4" fill="oklch(75% 0.16 75)"/>
+            </g>
+            <text x="160" y="145" text-anchor="middle" fill="oklch(75% 0.16 75)" font-size="14" font-weight="600" font-family="DM Sans">EU</text>
+            <text x="160" y="240" text-anchor="middle" fill="oklch(70% 0.015 240)" font-size="14" font-family="DM Sans">MinIO · Hetzner · Cloudflare R2</text>
+            <text x="160" y="262" text-anchor="middle" fill="oklch(70% 0.015 240)" font-size="14" font-family="DM Sans">Scaleway · On-premise</text>
+            <text x="160" y="290" text-anchor="middle" fill="oklch(50% 0.02 240)" font-size="12" font-style="italic" font-family="DM Sans">Any S3-compatible storage</text>
+          </svg>
         </div>
       </div>
     </div>
