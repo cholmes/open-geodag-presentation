@@ -11,12 +11,10 @@
 
 <script type="application/json" id="speaker-notes">
 [
-  "Good morning — and thank you, Rob, for the invitation. I've been wanting to come back to the Netherlands for a while. I want to talk about the future of Spatial Data Infrastructure — what it could look like, why it matters now more than ever, and why I think we're finally in a position to build it properly.",
-  "I've been part of the Planet team for the past several years. Planet operates the world's largest fleet of Earth-observation satellites — imaging the entire planet every single day. What that means in practice: processing enormous volumes of imagery at global scale, with very high reliability, and making it accessible fast. The experience of building infrastructure at that scale changes how you think about data sharing entirely.",
-  "But I didn't start in the satellite world. I started my career as the first lead developer of GeoServer. Some of you are probably still running it. GeoServer was the WFS reference implementation — open source, widely adopted, deeply connected to this community. Rijkswaterstaat was one of its earliest major users, and there were many great Dutch contributors to the open source communities I worked in.",
-  "And I was deeply involved in making GeoServer work for INSPIRE. I believed in the vision. A pan-European infrastructure where any citizen, any business, any researcher could find and use spatial data from any member state. Discoverable. Interoperable. Open. But if I'm honest — an infrastructure fully based on WMS and WFS never quite delivered on its promise. And then AI arrived — and the entire architecture became opaque to it.",
-  "A bit more about the arc of my work. The logos on this slide represent the organizations and standards I've been most involved with: GeoServer, Rijkswaterstaat, INSPIRE, WMS, WFS, and the OGC. These represent a genuine belief in open spatial infrastructure that I've held for over twenty years — and a growing frustration with why that infrastructure has been so hard to actually realize.",
-  "In recent years, my open geospatial energy has gone into three specifications: COG, STAC, and GeoParquet. These are at the heart of what we call cloud-native geospatial. And I've realized they have real potential — not just for streaming data — but to actually realize the original vision of SDI. Better than what we have now.",
+  "Thank you so much for inviting me to share my thoughts on the future of geospatial data infrastructure. I've known Rob for many years from my time on the OGC board, and I moved to the Netherlands about nine months ago, living in Amsterdam and working in Haarlem. It's been awesome living here, and I've long been a fan of Geonovum, so it's a real pleasure to be here with you all.",
+  "I work for Planet, a satellite company that images the entire earth every single day. It's a great company, and if you've not heard of it you should check it out. But today I'm going to talk about a topic I've been working towards for my entire career. ",
+  "I got my start as the first lead developer of GeoServer, almost 25 years ago. I did the early code for it to serve as reference implementation of the Web Feature Service specification, and always appreciated that we were working to make geospatial data truly available for analysis, not just sharing maps. ",
+  "And I was deeply involved in the early implementations of INSPIRE. We spent a lot of time trying to improve GeoServer to map from databases to the interoperable application schemas. I loved the vision of INSPIRE, and really admired that Europe invested so much to make it happen. But I don't think the infrastructure ever really delivered on its promise.",
   "The vision that animated INSPIRE was genuinely compelling. A federated European spatial data infrastructure — discoverable, interoperable, openly accessible to all. But look at what actually exists today. Complex server stacks. High implementation cost. Brittle services. Data siloed in GIS departments. And AI completely locked out. The good news: the tools that exist today make the original vision achievable for the first time.",
   "The first requirement is that our SDI must be AI-first. Current SDI software was built when GIS professionals were the only users. AI and agents are now becoming how many organizations interact with data — but our stack of slow APIs, JavaScript portals, and complex WFS queries is exactly what AI doesn't want. What AI wants is direct access to the full dataset, fast, with rich metadata about what it means. We have to rebuild with AI as a first-class citizen.",
   "The second requirement is ease of implementation. Getting data into a compliant SDI today is a serious undertaking. You need to convert data to the right schemas, stand up WMS and WFS services, manage databases, keep services running. That requires database administrators, web service experts, and staff on call. For a small municipality or regional authority, that's simply not realistic. The barrier is too high.",
@@ -756,163 +754,7 @@
     </div>
   </section>
 
-  <!-- ⑤ SPEAKER INTRO (shifted) -->
-  <section class="slide-dark2" data-label="05 About Me">
-    <div class="slide-content">
-      <div class="slide-header">
-        <div class="slide-eyebrow">Background</div>
-        <div class="slide-title-lg">A Familiar Frustration</div>
-      </div>
-      <div class="slide-body" style="justify-content:center;">
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:36px; width:100%;">
-
-          <!-- GeoServer -->
-          <div style="background:oklch(100% 0 0 / 0.06); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; padding:40px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center;">
-            <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="88" height="88" rx="16" fill="rgba(232,134,58,0.12)"/>
-              <rect x="14" y="59" width="60" height="9" rx="4.5" fill="#e8863a"/>
-              <rect x="14" y="44" width="60" height="9" rx="4.5" fill="#e8863a" opacity="0.74"/>
-              <rect x="14" y="29" width="60" height="9" rx="4.5" fill="#e8863a" opacity="0.48"/>
-              <rect x="20" y="16" width="48" height="8" rx="4" fill="#e8863a" opacity="0.26"/>
-            </svg>
-            <div>
-              <div style="font-size:31px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">GeoServer</div>
-              <div style="font-size:20px; color:oklch(60% 0.02 240); margin-top:8px;">Lead Developer</div>
-            </div>
-          </div>
-
-          <!-- Rijkswaterstaat -->
-          <div style="background:oklch(100% 0 0 / 0.06); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; padding:40px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center;">
-            <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="88" height="88" rx="16" fill="rgba(0,114,176,0.12)"/>
-              <text x="44" y="34" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="20" font-weight="700" fill="#0072b0" letter-spacing="0.06em">RWS</text>
-              <path d="M10 50 C19 38, 31 38, 40 50 C49 62, 61 62, 70 50 C79 38, 88 38, 88 50" stroke="#0072b0" stroke-width="6" stroke-linecap="round" fill="none"/>
-              <path d="M10 63 C19 51, 31 51, 40 63 C49 75, 61 75, 70 63" stroke="#0072b0" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.45"/>
-            </svg>
-            <div>
-              <div style="font-size:27px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">Rijkswaterstaat</div>
-              <div style="font-size:20px; color:oklch(60% 0.02 240); margin-top:8px;">Earliest Major User</div>
-            </div>
-          </div>
-
-          <!-- INSPIRE -->
-          <div style="background:oklch(100% 0 0 / 0.06); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; padding:40px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center;">
-            <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="88" height="88" rx="16" fill="rgba(0,51,153,0.15)"/>
-              <circle cx="44" cy="44" r="26" stroke="#003399" stroke-width="2" fill="none" opacity="0.45"/>
-              <!-- 12 EU stars as dots, radius 22 from center (44,44) -->
-              <circle cx="44" cy="22" r="4.5" fill="#ffcc00"/>
-              <circle cx="55" cy="25" r="4.5" fill="#ffcc00"/>
-              <circle cx="63" cy="33" r="4.5" fill="#ffcc00"/>
-              <circle cx="66" cy="44" r="4.5" fill="#ffcc00"/>
-              <circle cx="63" cy="55" r="4.5" fill="#ffcc00"/>
-              <circle cx="55" cy="63" r="4.5" fill="#ffcc00"/>
-              <circle cx="44" cy="66" r="4.5" fill="#ffcc00"/>
-              <circle cx="33" cy="63" r="4.5" fill="#ffcc00"/>
-              <circle cx="25" cy="55" r="4.5" fill="#ffcc00"/>
-              <circle cx="22" cy="44" r="4.5" fill="#ffcc00"/>
-              <circle cx="25" cy="33" r="4.5" fill="#ffcc00"/>
-              <circle cx="33" cy="25" r="4.5" fill="#ffcc00"/>
-            </svg>
-            <div>
-              <div style="font-size:31px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">INSPIRE</div>
-              <div style="font-size:20px; color:oklch(60% 0.02 240); margin-top:8px;">EU SDI Directive</div>
-            </div>
-          </div>
-
-          <!-- WMS -->
-          <div style="background:oklch(100% 0 0 / 0.06); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; padding:40px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center;">
-            <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="88" height="88" rx="16" fill="oklch(100% 0 0 / 0.05)"/>
-              <text x="44" y="58" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="38" font-weight="700" fill="oklch(75% 0.16 75)">WMS</text>
-            </svg>
-            <div>
-              <div style="font-size:31px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">WMS</div>
-              <div style="font-size:20px; color:oklch(60% 0.02 240); margin-top:8px;">Web Map Service</div>
-            </div>
-          </div>
-
-          <!-- WFS -->
-          <div style="background:oklch(100% 0 0 / 0.06); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; padding:40px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center;">
-            <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="88" height="88" rx="16" fill="oklch(100% 0 0 / 0.05)"/>
-              <text x="44" y="58" text-anchor="middle" font-family="'DM Mono','Courier New',monospace" font-size="38" font-weight="700" fill="oklch(75% 0.16 75)">WFS</text>
-            </svg>
-            <div>
-              <div style="font-size:31px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">WFS</div>
-              <div style="font-size:20px; color:oklch(60% 0.02 240); margin-top:8px;">Web Feature Service</div>
-            </div>
-          </div>
-
-          <!-- OGC -->
-          <div style="background:oklch(100% 0 0 / 0.06); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; padding:40px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center;">
-            <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="88" height="88" rx="16" fill="oklch(100% 0 0 / 0.05)"/>
-              <circle cx="44" cy="44" r="24" stroke="oklch(75% 0.16 75)" stroke-width="2.5" fill="none"/>
-              <ellipse cx="44" cy="44" rx="12" ry="24" stroke="oklch(75% 0.16 75)" stroke-width="1.8" fill="none"/>
-              <line x1="20" y1="44" x2="68" y2="44" stroke="oklch(75% 0.16 75)" stroke-width="1.8"/>
-              <line x1="23" y1="33" x2="65" y2="33" stroke="oklch(75% 0.16 75)" stroke-width="1.2" opacity="0.55"/>
-              <line x1="23" y1="55" x2="65" y2="55" stroke="oklch(75% 0.16 75)" stroke-width="1.2" opacity="0.55"/>
-            </svg>
-            <div>
-              <div style="font-size:31px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">OGC</div>
-              <div style="font-size:20px; color:oklch(60% 0.02 240); margin-top:8px;">Open Geospatial Consortium</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ③ RECENT WORK: COG / STAC / GEOPARQUET -->
-  <section class="slide-dark" data-label="06 Recent Work">
-    <div class="slide-content">
-      <div class="slide-header">
-        <div class="slide-eyebrow">The pivot</div>
-        <div class="slide-title-lg">A Better Toolkit</div>
-      </div>
-      <div class="slide-body" style="justify-content:space-between; gap:40px;">
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:48px; flex:1; min-height:0;">
-
-          <!-- COG -->
-          <div style="background:oklch(100% 0 0 / 0.05); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; padding:44px 36px;">
-            <img src="uploads/cog_logo.png" alt="COG logo" style="height:130px; width:auto; object-fit:contain; display:block;">
-            <div style="text-align:center;">
-              <div style="font-size:34px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">COG</div>
-              <div style="font-size:21px; color:oklch(60% 0.02 240); margin-top:8px;">Cloud-Optimized GeoTIFF</div>
-            </div>
-          </div>
-
-          <!-- STAC -->
-          <div style="background:oklch(100% 0 0 / 0.05); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; padding:44px 36px;">
-            <img src="uploads/stac_logo.png" alt="STAC logo" style="height:130px; width:auto; object-fit:contain; display:block;">
-            <div style="text-align:center;">
-              <div style="font-size:34px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">STAC</div>
-              <div style="font-size:21px; color:oklch(60% 0.02 240); margin-top:8px;">SpatioTemporal Asset Catalog</div>
-            </div>
-          </div>
-
-          <!-- GeoParquet -->
-          <div style="background:oklch(100% 0 0 / 0.05); border:1px solid oklch(100% 0 0 / 0.08); border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; padding:44px 36px;">
-            <div style="background:oklch(96% 0.005 240); border-radius:12px; padding:12px; display:flex; align-items:center; justify-content:center;">
-              <img src="uploads/geoparquet_logo.svg" alt="GeoParquet logo" style="height:106px; width:auto; object-fit:contain;">
-            </div>
-            <div style="text-align:center;">
-              <div style="font-size:34px; font-weight:700; color:oklch(97% 0.005 240); letter-spacing:-0.01em; line-height:1.1;">GeoParquet</div>
-              <div style="font-size:21px; color:oklch(60% 0.02 240); margin-top:8px;">Columnar Geospatial Format</div>
-            </div>
-          </div>
-
-        </div>
-        <div style="font-size:28px; font-weight:300; color:oklch(62% 0.02 240); line-height:1.55; text-align:center; padding:0 120px; flex-shrink:0;">
-          In recent years: a realization that these formats can do what INSPIRE tried to do — and more.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ④ THE SDI GAP -->
+  <!-- THE SDI GAP -->
   <section class="slide-dark2" data-label="07 The SDI Gap">
     <div class="slide-content">
       <div class="slide-header">
