@@ -156,46 +156,44 @@
 
 <script>
   let notes = [];
+  let totalSlides = 0;
   let currentIndex = -1;
 
-  // Open deck button
   document.getElementById('openBtn').addEventListener('click', () => {
     window.open('opengeo-dag.html', 'opengeo-deck',
       'width=1280,height=720,menubar=no,toolbar=no,location=no');
   });
 
-  // Listen for slide changes via BroadcastChannel.
-  // Notes are sent along with each message so no fetch() is needed
-  // (fetch of local file:// pages is blocked by browsers).
   const bc = new BroadcastChannel('portolan-deck');
+
   bc.onmessage = (e) => {
-    if (e.data.nav) return; // ignore nav commands we sent ourselves
+    if (e.data.type !== 'slidechange') return;
     const { index, total, notes: incomingNotes } = e.data;
-    if (incomingNotes && notes.length === 0) notes = incomingNotes;
-    showNote(index, total);
-    document.getElementById('status').textContent = 'Connected ✓';
+    if (incomingNotes && incomingNotes.length > 0) notes = incomingNotes;
+    if (total > 0) totalSlides = total;
+    showNote(index);
+    document.getElementById('status').textContent = 'Connected';
     document.getElementById('status').className = 'status connected';
   };
 
-  // Arrow keys in presenter window drive the deck
   window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
-      bc.postMessage({ nav: 'next' });
+      bc.postMessage({ type: 'nav', dir: 'next' });
       e.preventDefault();
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
-      bc.postMessage({ nav: 'prev' });
+      bc.postMessage({ type: 'nav', dir: 'prev' });
       e.preventDefault();
     }
   });
 
-  function showNote(index, total) {
+  function showNote(index) {
     const card = document.getElementById('noteCard');
     const counter = document.getElementById('counter');
     const fill = document.getElementById('progressFill');
 
+    if (index === currentIndex) return;
     currentIndex = index;
 
-    // Fade out
     card.classList.add('fade');
 
     setTimeout(() => {
@@ -208,9 +206,9 @@
         card.classList.add('empty');
       }
 
-      if (total !== undefined) {
-        counter.textContent = `${index + 1} / ${total}`;
-        fill.style.width = `${((index + 1) / total) * 100}%`;
+      if (totalSlides > 0) {
+        counter.textContent = `${index + 1} / ${totalSlides}`;
+        fill.style.width = `${((index + 1) / totalSlides) * 100}%`;
       }
 
       card.classList.remove('fade');

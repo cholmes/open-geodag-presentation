@@ -15,14 +15,14 @@
   "I work for Planet, a satellite company that images the entire earth every single day. It's a great company, and if you've not heard of it you should check it out. But today I'm going to talk about a topic I've been working towards for my entire career. ",
   "I got my start as the first lead developer of GeoServer, almost 25 years ago. I did the early code for it to serve as reference implementation of the Web Feature Service specification, and always appreciated that we were working to make geospatial data truly available for analysis, not just sharing maps. ",
   "And I was deeply involved in the early implementations of INSPIRE. We spent a lot of time trying to improve GeoServer to map from databases to the interoperable application schemas. I loved the vision of INSPIRE, and really admired that Europe invested so much to make it happen. But I don't think the infrastructure ever really delivered on its promise.",
-  "The vision that animated INSPIRE was genuinely compelling. A federated European spatial data infrastructure — discoverable, interoperable, openly accessible to all. But look at what actually exists today. Complex server stacks. High implementation cost. Brittle services. Data siloed in GIS departments. And AI completely locked out. The good news: the tools that exist today make the original vision achievable for the first time.",
-  "The first requirement is that our SDI must be AI-first. Current SDI software was built when GIS professionals were the only users. AI and agents are now becoming how many organizations interact with data — but our stack of slow APIs, JavaScript portals, and complex WFS queries is exactly what AI doesn't want. What AI wants is direct access to the full dataset, fast, with rich metadata about what it means. We have to rebuild with AI as a first-class citizen.",
-  "The second requirement is ease of implementation. Getting data into a compliant SDI today is a serious undertaking. You need to convert data to the right schemas, stand up WMS and WFS services, manage databases, keep services running. That requires database administrators, web service experts, and staff on call. For a small municipality or regional authority, that's simply not realistic. The barrier is too high.",
-  "Third: scalability. AI agents don't just query an API once — they crawl. An LLM building an application might pull an entire dataset in a single session. In the current paradigm, that means spinning up more servers, more clusters. Your SDI can become a victim of its own success. The ideal infrastructure should handle any amount of traffic without breaking a sweat.",
-  "Fourth: cost. That scalability can't come at a massive price. Sharing data publicly is a public good — it shouldn't be an organizational burden. Storage costs, server costs, staff costs — they add up fast. And if a dataset becomes very popular, an organization shouldn't fear the bill. The cost model needs to change fundamentally.",
-  "Finally: sovereignty. We've seen a growing and important movement toward sovereign software — keeping the full stack outside the control of companies based in other jurisdictions. I believe this matters deeply, and I'm glad it's gaining traction here in Europe. Any serious SDI proposal for a Dutch government institution must be able to answer this question cleanly.",
-  "For the past several years, an incredible global community has been building a new way of working with geospatial data. We call it cloud-native geospatial. At its heart is a set of formats that eliminate the need for a server — instead, they leverage the intrinsic capabilities of cloud storage to serve data efficiently, at scale. Let me give you a quick tour of the key formats.",
-  "Cloud-Optimized GeoTIFF — or COG — is a raster format. A regular GeoTIFF is just a blob of pixels. A COG organizes those pixels so that any client can request just the part it needs using HTTP range requests. No tile server. No WMS. Just a file on object storage that any compliant client can use as if it were a live service.",
+  "The vision that animated INSPIRE was genuinely compelling. A federated European spatial data infrastructure — discoverable, interoperable, openly accessible to all. But I believe that a 'better' SDI from what we have today is possible. I see five different ways we could 'upgrade'.",
+  "Let's start with the most interesting one first. Our infrastructure was not built with AI or agents in mind. But it's fast becoming the way many people interact with the world. The current SDI software is mostly slow API's and javascript portals. This isn't the way AI wants to interact with the data. What AI wants is to just get the full data as quickly as possible, along with as much useful metadata about what the data represents. So we need to rebuild our SDI's with AI as a first-class citizen, as it can make spatial data much more accessible and useful to a much wider number of people.",
+  "The second requirement is ease of implementation. Getting data into a compliant SDI today is a serious undertaking. You need to convert data to the right schemas, stand up WMS and WFS services, manage databases, keep services running. That requires database administrators, web service experts, and staff on call. There's been a vision that any government agency, even a small town, could be part of the SDI. Today that's not realistic, but I believe we can drastically lower the barrier for non-experts to share their data.",
+  "The rise of AI means that services must support agents as well as humans. And AI agents don't just query an API once — they make many requests suck down entire datasets. In the current paradigm, that means spinning up more servers and more clusters just to stay available to the public. Your SDI can become a victim of its own success. The ideal infrastructure should handle any amount of traffic without breaking a sweat.",
+  "That scalability can't come at a massive price. Sharing data publicly is a public good — it shouldn't be an organizational burden. Storage costs, server costs, staff costs — they add up fast. And if a dataset becomes very popular it shouldn't cause a budget shortfall.",
+  "Finally: sovereignty. We've seen a growing and important movement toward sovereign software to have control over the full stack of software and services within a country. I believe this matters deeply, and I'm glad it's gaining traction here in Europe. SDI's should not be dependent on foreign clouds and software vendors.",
+  "So that's my take on what a better SDI would look like. For the past several years, an incredible global community has been building a new way of working with geospatial data. We call it cloud-native geospatial. At its heart is a set of formats that eliminate the need for a server — instead, they leverage the intrinsic capabilities of cloud storage to serve data efficiently, at scale. I believe these provide the right foundation to fundamentally upgrade how SDI's work. Let me give you a quick tour of the key formats.",
+  "Cloud Optimized GeoTIFF's proved out this approach of streaming geospatial data on the cloud instead of passing it around or requiring a big web server.",
   "Zarr is the format for large multidimensional arrays — think climate models, satellite time series, oceanographic data. It chunks and indexes data so that you can stream just a slice of a massive dataset without downloading the whole thing. It's becoming the standard for scientific raster data at scale.",
   "Cloud-Optimized Point Cloud — COPC — does for LiDAR what COG does for rasters. The Netherlands has some of the world's best LiDAR coverage with AHN. COPC makes that data streamable directly from object storage, without a server, without preprocessing for each request.",
   "PMTiles is a single-file archive format for map tiles — vector or raster. Instead of a tile server generating tiles on demand, you have one file on S3 that any client can read with range requests. Deploy a fully interactive web map with zero server infrastructure.",
@@ -755,26 +755,20 @@
   </section>
 
   <!-- THE SDI GAP -->
-  <section class="slide-dark2" data-label="07 The SDI Gap">
+  <section class="slide-dark2" data-label="05 The Vision">
     <div class="slide-content">
       <div class="slide-header">
-        <div class="slide-eyebrow">The problem</div>
-        <div class="slide-title-lg">The SDI Gap</div>
+        <div class="slide-eyebrow">The vision</div>
+        <div class="slide-title-lg">A federated European spatial data infrastructure — discoverable, interoperable, openly accessible to all.</div>
       </div>
       <div class="slide-body" style="justify-content:center;">
-        <div class="cols-2" style="gap:80px; align-items:start;">
-          <div>
-            <div style="margin-bottom:24px; letter-spacing:0.05em; text-transform:uppercase; font-size:var(--t-label); font-weight:600; color:var(--muted);">The Vision</div>
-            <div class="body" style="color:oklch(85% 0.01 240); line-height:1.6;">
-              A federated European spatial data infrastructure — discoverable, interoperable, openly accessible to all.
-            </div>
-          </div>
-          <div>
-            <div style="margin-bottom:24px; letter-spacing:0.05em; text-transform:uppercase; font-size:var(--t-label); font-weight:600; color:var(--muted);">The Reality</div>
-            <div class="body" style="color:oklch(85% 0.01 240); line-height:1.6;">
-              Complex server stacks. High implementation cost. Brittle services. Data siloed in GIS departments. And AI completely locked out.
-            </div>
-          </div>
+        <div style="margin-bottom:24px; letter-spacing:0.05em; text-transform:uppercase; font-size:var(--t-label); font-weight:600; color:var(--muted);">Upgrading</div>
+        <div class="pill-row">
+          <div class="pill">AI-First</div>
+          <div class="pill">Easy to Implement</div>
+          <div class="pill">Scalable</div>
+          <div class="pill">Low Cost</div>
+          <div class="pill">Sovereign</div>
         </div>
       </div>
     </div>
@@ -824,9 +818,9 @@
           </div>
           <!-- Points -->
           <div style="display:flex;flex-direction:column;gap:32px;">
-            <div class="format-split-bullet">Current SDI software was built for GIS professionals — not for AI and agents.</div>
-            <div class="format-split-bullet">AI wants direct access to full datasets, fast — with rich, machine-readable metadata about what the data means.</div>
-            <div class="format-split-bullet">WFS queries, JavaScript portals, and slow APIs are opaque to LLMs. No agent can naturally discover or use a WFS endpoint.</div>
+            <div class="format-split-bullet">Current SDI was not built for AI or agents.</div>
+            <div class="format-split-bullet">AI needs full data and rich metadata, fast.</div>
+            <div class="format-split-bullet">Rebuild SDI with AI as a first-class citizen.</div>
           </div>
         </div>
       </div>
@@ -868,9 +862,8 @@
           </div>
           <!-- Points -->
           <div style="display:flex;flex-direction:column;gap:32px;">
-            <div class="format-split-bullet">Deploying a compliant SDI requires converting data, standing up WMS + WFS services, and managing a database.</div>
-            <div class="format-split-bullet">You need a DBA, a web service engineer, and staff on call — just to share a dataset publicly.</div>
-            <div class="format-split-bullet">For small municipalities and regional authorities, this barrier is simply too high. Data stays locked away.</div>
+            <div class="format-split-bullet">Today's SDI requires databases, services, and specialist staff.</div>
+            <div class="format-split-bullet">The barrier is too high — most organizations can't participate.</div>
           </div>
         </div>
       </div>
@@ -892,18 +885,30 @@
       </div>
       <div class="slide-body" style="justify-content:center;">
         <div class="cols-2" style="gap:80px;align-items:center;">
-          <!-- Visual: infinity / wave -->
+          <!-- Visual: scaling graph -->
           <div style="display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 320 200" width="380" height="240" xmlns="http://www.w3.org/2000/svg">
-              <text x="160" y="155" text-anchor="middle" font-size="180" font-weight="700" font-family="'DM Sans',sans-serif" fill="oklch(75% 0.16 75)" letter-spacing="-0.04em" opacity="0.7">∞</text>
-              <text x="160" y="188" text-anchor="middle" font-size="18" font-weight="400" font-family="'DM Sans',sans-serif" fill="oklch(60% 0.02 240)" letter-spacing="0.12em" text-transform="uppercase">TRAFFIC NEEDED TO BREAK A SERVER</text>
+            <svg viewBox="0 0 340 280" width="380" height="300" xmlns="http://www.w3.org/2000/svg">
+              <!-- Axes -->
+              <line x1="50" y1="230" x2="310" y2="230" stroke="oklch(60% 0.02 240)" stroke-width="1.5"/>
+              <line x1="50" y1="230" x2="50" y2="30" stroke="oklch(60% 0.02 240)" stroke-width="1.5"/>
+              <!-- Axis labels -->
+              <text x="180" y="258" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="14" fill="oklch(55% 0.02 240)">Traffic</text>
+              <text x="22" y="130" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="14" fill="oklch(55% 0.02 240)" transform="rotate(-90 22 130)">Cost</text>
+              <!-- Danger zone -->
+              <rect x="210" y="30" width="100" height="200" fill="oklch(60% 0.18 30)" opacity="0.05" rx="4"/>
+              <!-- Server-based: steep exponential curve -->
+              <path d="M60 222 Q140 218 190 185 Q240 130 275 50" fill="none" stroke="oklch(60% 0.18 30)" stroke-width="3" stroke-linecap="round"/>
+              <text x="240" y="42" font-family="'DM Sans',sans-serif" font-size="14" fill="oklch(60% 0.18 30)" font-weight="600">Servers</text>
+              <!-- Cloud-native: flat line -->
+              <path d="M60 218 L300 205" fill="none" stroke="oklch(65% 0.17 155)" stroke-width="3" stroke-linecap="round"/>
+              <text x="305" y="200" font-family="'DM Sans',sans-serif" font-size="14" fill="oklch(65% 0.17 155)" font-weight="600">Files</text>
             </svg>
           </div>
           <!-- Points -->
           <div style="display:flex;flex-direction:column;gap:32px;">
-            <div class="format-split-bullet">AI agents don't query once — they crawl. An LLM may pull an entire dataset in a single session.</div>
-            <div class="format-split-bullet">In the current paradigm, popular data means spinning up more servers, more clusters — more cost, more failure risk.</div>
-            <div class="format-split-bullet">Your SDI can become a victim of its own success. The infrastructure should get out of the way.</div>
+            <div class="format-split-bullet">AI agents crawl entire datasets, not single queries.</div>
+            <div class="format-split-bullet">More popularity means more servers — until something breaks.</div>
+            <div class="format-split-bullet">Infrastructure should scale without human intervention.</div>
           </div>
         </div>
       </div>
@@ -942,9 +947,9 @@
           </div>
           <!-- Points -->
           <div style="display:flex;flex-direction:column;gap:32px;">
-            <div class="format-split-bullet">Sharing data publicly is a public good — it shouldn't be a major organizational cost centre.</div>
-            <div class="format-split-bullet">Always-on server infrastructure, database licensing, and ops staff are the biggest line items — and the hardest to cut.</div>
-            <div class="format-split-bullet">When a dataset goes viral, an organisation shouldn't have to fear the bill or shut down access.</div>
+            <div class="format-split-bullet">Sharing public data shouldn't be an organizational burden.</div>
+            <div class="format-split-bullet">Server, staff, and licensing costs add up fast.</div>
+            <div class="format-split-bullet">Popular datasets shouldn't cause budget shortfalls.</div>
           </div>
         </div>
       </div>
@@ -987,9 +992,8 @@
           </div>
           <!-- Points -->
           <div style="display:flex;flex-direction:column;gap:32px;">
-            <div class="format-split-bullet">Critical spatial data infrastructure should not depend on software or services controlled by organizations in other jurisdictions.</div>
-            <div class="format-split-bullet">Many current SDI deployments rely on proprietary geospatial platforms and foreign cloud vendors in the critical path.</div>
-            <div class="format-split-bullet">This concern is growing, and rightly so — especially for Dutch and EU government data infrastructure.</div>
+            <div class="format-split-bullet">Control the full stack within your own jurisdiction.</div>
+            <div class="format-split-bullet">SDI should not depend on foreign clouds or vendors.</div>
           </div>
         </div>
       </div>
@@ -1509,19 +1513,26 @@
 </deck-stage>
 
 <script>
-  // Broadcast slide changes so presenter.html can stay in sync
   const _bc = new BroadcastChannel('portolan-deck');
   const _notesTag = document.getElementById('speaker-notes');
   const _deckNotes = _notesTag ? JSON.parse(_notesTag.textContent || '[]') : [];
+  const _deck = document.querySelector('deck-stage');
+
   document.addEventListener('slidechange', (e) => {
-    _bc.postMessage({ index: e.detail.index, total: e.detail.total, notes: _deckNotes });
+    _bc.postMessage({ type: 'slidechange', index: e.detail.index, total: e.detail.total, notes: _deckNotes });
   });
 
-  // Accept navigation commands from presenter.html
-  const _deck = document.querySelector('deck-stage');
+  // Re-broadcast current state so a presenter opened after the deck still syncs
+  _deck.addEventListener('slidechange', () => {}, { once: true });
+  requestAnimationFrame(() => {
+    _bc.postMessage({ type: 'slidechange', index: _deck.index, total: _deck.length, notes: _deckNotes });
+  });
+
   _bc.addEventListener('message', (e) => {
-    if (e.data.nav === 'next') _deck.next();
-    else if (e.data.nav === 'prev') _deck.prev();
+    if (e.data.type === 'nav') {
+      if (e.data.dir === 'next') _deck.next();
+      else if (e.data.dir === 'prev') _deck.prev();
+    }
   });
 </script>
 
