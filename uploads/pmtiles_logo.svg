@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="#3232cc"/>
+  <!-- 24 rounded squares evenly spaced at radius 68, each rotated to face outward -->
+  <!-- Colors cycle through the pastel palette visible in the logo -->
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f0eeee"  transform="rotate(  0 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f4b8cc"  transform="rotate( 15 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#d4b4e8"  transform="rotate( 30 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#b8e4c8"  transform="rotate( 45 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#90cc9c"  transform="rotate( 60 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#b4d8f0"  transform="rotate( 75 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#7cc8b4"  transform="rotate( 90 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f0d0a8"  transform="rotate(105 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f0eeee"  transform="rotate(120 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f4b8cc"  transform="rotate(135 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#d4b4e8"  transform="rotate(150 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#b8e4c8"  transform="rotate(165 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#90cc9c"  transform="rotate(180 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#b4d8f0"  transform="rotate(195 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#7cc8b4"  transform="rotate(210 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f0d0a8"  transform="rotate(225 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f0eeee"  transform="rotate(240 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f4b8cc"  transform="rotate(255 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#d4b4e8"  transform="rotate(270 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#b8e4c8"  transform="rotate(285 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#90cc9c"  transform="rotate(300 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#b4d8f0"  transform="rotate(315 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#7cc8b4"  transform="rotate(330 100 100)"/>
+  <rect x="93" y="25" width="14" height="14" rx="3" fill="#f0d0a8"  transform="rotate(345 100 100)"/>
+</svg>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portolan — Presenter View</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:     oklch(16% 0.04 240);
+    --navy2:    oklch(22% 0.05 240);
+    --navy3:    oklch(28% 0.05 238);
+    --gold:     oklch(75% 0.16 75);
+    --white:    oklch(97% 0.005 240);
+    --offwhite: oklch(93% 0.008 240);
+    --muted:    oklch(60% 0.02 240);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+
+  body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    padding: 2rem 2.5rem;
+    gap: 1.5rem;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .slide-counter {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+    min-width: 5ch;
+    text-align: right;
+  }
+
+  .open-btn {
+    background: var(--navy3);
+    color: var(--white);
+    border: 1px solid oklch(35% 0.05 238);
+    border-radius: 6px;
+    padding: 0.4rem 1rem;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .open-btn:hover { background: oklch(33% 0.05 238); }
+
+  /* ── Note card ── */
+  .note-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .note-card {
+    background: var(--navy2);
+    border: 1px solid oklch(30% 0.05 238);
+    border-radius: 12px;
+    padding: 2.5rem 3rem;
+    line-height: 1.75;
+    font-size: clamp(1.1rem, 2vw, 1.45rem);
+    font-weight: 400;
+    color: var(--offwhite);
+    transition: opacity 0.2s ease;
+  }
+
+  .note-card.fade { opacity: 0; }
+
+  .note-card.empty {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 1.1rem;
+  }
+
+  /* ── Footer / nav hint ── */
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .status {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .status.connected { color: oklch(65% 0.15 145); }
+  .status.waiting   { color: var(--gold); }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: oklch(25% 0.04 240);
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="title">Portolan — Speaker Notes</span>
+  <div style="display:flex;align-items:center;gap:1.2rem;">
+    <button class="open-btn" id="openBtn">Open Deck ↗</button>
+    <span class="slide-counter" id="counter">— / —</span>
+  </div>
+</header>
+
+<div class="note-wrap">
+  <div class="note-card empty" id="noteCard">
+    Open the deck in another window, then navigate to any slide.
+  </div>
+</div>
+
+<footer>
+  <span class="status waiting" id="status">Waiting for deck…</span>
+</footer>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<script>
+  let notes = [];
+  let currentIndex = -1;
+
+  // Open deck button
+  document.getElementById('openBtn').addEventListener('click', () => {
+    window.open('Portolan.html', 'portolan-deck',
+      'width=1280,height=720,menubar=no,toolbar=no,location=no');
+  });
+
+  // Listen for slide changes via BroadcastChannel.
+  // Notes are sent along with each message so no fetch() is needed
+  // (fetch of local file:// pages is blocked by browsers).
+  const bc = new BroadcastChannel('portolan-deck');
+  bc.onmessage = (e) => {
+    if (e.data.nav) return; // ignore nav commands we sent ourselves
+    const { index, total, notes: incomingNotes } = e.data;
+    if (incomingNotes && notes.length === 0) notes = incomingNotes;
+    showNote(index, total);
+    document.getElementById('status').textContent = 'Connected ✓';
+    document.getElementById('status').className = 'status connected';
+  };
+
+  // Arrow keys in presenter window drive the deck
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+      bc.postMessage({ nav: 'next' });
+      e.preventDefault();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+      bc.postMessage({ nav: 'prev' });
+      e.preventDefault();
+    }
+  });
+
+  function showNote(index, total) {
+    const card = document.getElementById('noteCard');
+    const counter = document.getElementById('counter');
+    const fill = document.getElementById('progressFill');
+
+    currentIndex = index;
+
+    // Fade out
+    card.classList.add('fade');
+
+    setTimeout(() => {
+      const note = notes[index];
+      if (note) {
+        card.textContent = note;
+        card.classList.remove('empty');
+      } else {
+        card.textContent = '(No notes for this slide)';
+        card.classList.add('empty');
+      }
+
+      if (total !== undefined) {
+        counter.textContent = `${index + 1} / ${total}`;
+        fill.style.width = `${((index + 1) / total) * 100}%`;
+      }
+
+      card.classList.remove('fade');
+    }, 180);
+  }
+</script>
+</body>
+</html>
