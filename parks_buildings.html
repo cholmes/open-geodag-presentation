@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Buildings in Dutch National Parks · BAG Light × Nationale Parken</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3.2.0/dist/pmtiles.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --paper: #f3eee4;
+  --paper-2: #ebe4d4;
+  --ink: #1c2419;
+  --ink-2: #4a5240;
+  --rule: #c8bfa9;
+  --moss: #4a6b3a;
+  --moss-2: #6e8c5a;
+  --rust: #b04a26;
+  --ochre: #c89934;
+  --slate: #3a4d5c;
+  --plum: #6b3a52;
+  --teal: #2d6b6b;
+  --gray: #8a8775;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--paper); color: var(--ink); font-family: 'Sora', sans-serif; font-weight: 300; line-height: 1.55; }
+
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.14 0 0 0 0 0.10 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.wrap { max-width: 1400px; margin: 0 auto; padding: 60px 48px 80px; position: relative; z-index: 2; }
+
+header { border-bottom: 1px solid var(--rule); padding-bottom: 36px; margin-bottom: 56px; }
+.eyebrow {
+  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-2); display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 28px;
+}
+.eyebrow span::before { content: "◆ "; color: var(--moss); }
+h1 { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: clamp(40px, 6vw, 76px); line-height: 0.96; letter-spacing: -0.01em; margin-bottom: 24px; }
+h1 em { font-style: italic; color: var(--moss); }
+.deck { font-size: 18px; max-width: 720px; color: var(--ink-2); }
+.deck b { color: var(--ink); font-weight: 500; }
+
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 48px 0 64px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.kpi { padding: 24px 28px; border-right: 1px solid var(--rule); }
+.kpi:last-child { border-right: none; }
+.kpi-num { font-family: 'DM Serif Display', serif; font-size: 42px; line-height: 1; color: var(--ink); margin-bottom: 8px; }
+.kpi-num small { font-family: 'Sora', sans-serif; font-size: 14px; color: var(--ink-2); font-weight: 400; margin-left: 4px; }
+.kpi-lbl { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); }
+
+section { margin-bottom: 80px; }
+.sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 28px; border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+.sec-num { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--moss); letter-spacing: 0.1em; }
+h2 { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 32px; letter-spacing: -0.005em; }
+.sec-meta { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-2); letter-spacing: 0.1em; }
+
+p { margin-bottom: 14px; max-width: 780px; font-size: 15.5px; }
+p b { font-weight: 500; color: var(--ink); }
+
+#map-card { background: var(--paper-2); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+.map-controls { padding: 18px 24px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--rule); background: var(--paper); }
+.map-controls .label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); margin-right: 4px; }
+.fpill {
+  font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--rule); background: transparent; cursor: pointer; color: var(--ink-2);
+  transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; user-select: none;
+}
+.fpill:hover { border-color: var(--ink); color: var(--ink); }
+.fpill.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.fpill .swatch { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.park-select { font-family: 'DM Mono', monospace; font-size: 12px; padding: 6px 10px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); border-radius: 3px; cursor: pointer; }
+#map { height: 680px; width: 100%; background: #e8e1cf; }
+.zoom-hint {
+  position: absolute; top: 16px; left: 16px; z-index: 10; pointer-events: none;
+  background: rgba(28, 36, 25, 0.85); color: var(--paper); padding: 10px 14px;
+  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em;
+  border-radius: 3px; transition: opacity 0.3s; max-width: 260px; line-height: 1.5;
+}
+.zoom-hint.hidden { opacity: 0; }
+.map-legend { padding: 14px 24px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; color: var(--ink-2); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.maplibregl-popup-content {
+  font-family: 'Sora', sans-serif; font-size: 13px; padding: 14px 16px; background: var(--paper);
+  border: 1px solid var(--ink); border-radius: 2px; box-shadow: 6px 6px 0 var(--ink);
+  color: var(--ink);
+}
+.maplibregl-popup-content b { font-weight: 500; }
+.maplibregl-popup-tip { display: none; }
+
+.grid-3 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 32px; }
+.chart-card { background: var(--paper-2); border: 1px solid var(--rule); border-radius: 4px; padding: 28px; }
+.chart-card h3 { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 22px; margin-bottom: 6px; }
+.chart-card .sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-2); letter-spacing: 0.08em; margin-bottom: 24px; }
+.chart-wrap { position: relative; height: 360px; }
+.chart-wrap.tall { height: 540px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: left; font-family: 'DM Mono', monospace; font-weight: 400; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); padding: 10px 8px; border-bottom: 1px solid var(--ink); }
+td { padding: 10px 8px; border-bottom: 1px solid var(--rule); font-variant-numeric: tabular-nums; }
+td.right { text-align: right; }
+td.bar-cell { width: 220px; }
+.bar { height: 8px; background: var(--moss); border-radius: 1px; }
+tr.clickable { cursor: pointer; }
+tr.clickable:hover td { background: rgba(106, 134, 90, 0.12); }
+
+.insights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.icard { padding: 28px 24px; background: var(--paper-2); border: 1px solid var(--rule); border-left: 3px solid var(--moss); border-radius: 2px; }
+.icard:nth-child(2) { border-left-color: var(--rust); }
+.icard:nth-child(3) { border-left-color: var(--ochre); }
+.icard h4 { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 20px; margin-bottom: 10px; }
+.icard p { font-size: 14px; color: var(--ink-2); margin: 0; }
+.icard .num { font-family: 'DM Serif Display', serif; font-size: 36px; line-height: 1; margin-bottom: 6px; color: var(--ink); }
+
+footer { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--rule); font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-2); letter-spacing: 0.08em; line-height: 1.7; }
+footer a { color: var(--moss); text-decoration: none; border-bottom: 1px dotted var(--moss); }
+
+@media (max-width: 900px) {
+  .wrap { padding: 36px 20px; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .kpi { border-right: none; border-bottom: 1px solid var(--rule); }
+  .grid-3 { grid-template-columns: 1fr; }
+  .insights { grid-template-columns: 1fr; }
+  #map { height: 520px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">
+    <span>Portolan NL</span>
+    <span>BAG Light × Nationale Parken</span>
+    <span>n = 70,789 buildings inside parks</span>
+    <span>PMTiles · MapLibre · DuckDB</span>
+  </div>
+  <h1>What's <em>inside</em><br>a Dutch national park?</h1>
+  <p class="deck">The Netherlands has 21 national parks covering <b>237,000+ hectares</b> — but they are not empty wilderness. By spatially joining 11.4 million BAG building footprints against the park boundaries, we find <b>70,789 buildings</b> standing inside park lines. Most are in two parks. The rest are nearly empty.</p>
+</header>
+
+<div class="kpis">
+  <div class="kpi"><div class="kpi-num">21</div><div class="kpi-lbl">National Parks</div></div>
+  <div class="kpi"><div class="kpi-num">237k <small>ha</small></div><div class="kpi-lbl">Total Park Area</div></div>
+  <div class="kpi"><div class="kpi-num">70,789</div><div class="kpi-lbl">Buildings Inside</div></div>
+  <div class="kpi"><div class="kpi-num">88<small>%</small></div><div class="kpi-lbl">In just 2 parks</div></div>
+</div>
+
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 01</span>
+    <h2>The two outliers</h2>
+    <span class="sec-meta">Drentsche Aa · Van Gogh</span>
+  </div>
+  <p>The story of buildings in Dutch national parks is dominated by two: <b>Drentsche Aa</b> in Drenthe (37,270 buildings) and the new <b>Van Gogh National Park</b> in North Brabant (25,126 buildings). Together that's <b>88% of all buildings in any Dutch park</b>. Both are inhabited cultural landscapes — esdorpen, farmsteads, hamlets — designated as parks precisely because their human-made structure is part of the natural heritage.</p>
+  <p>Compare that to <b>De Hoge Veluwe</b> (47 buildings on 5,104 ha) or <b>Schiermonnikoog</b> (31 buildings on 6,838 ha) — these are wilder, with strict access limits. <b>De Groote Peel</b> has just <b>5 buildings</b> across its 1,314 hectares.</p>
+  <div class="insights" style="margin-top:32px">
+    <div class="icard">
+      <div class="num">1.13</div>
+      <h4>Drentsche Aa</h4>
+      <p>Buildings per hectare. By far the most populated park — entire villages like Anloo, Gasteren, and Schipborg sit within its boundaries.</p>
+    </div>
+    <div class="icard">
+      <div class="num">0.009</div>
+      <h4>De Hoge Veluwe</h4>
+      <p>Buildings per hectare. The country's iconic conservation park: forests, heathland, the Kröller-Müller Museum, and almost nothing else.</p>
+    </div>
+    <div class="icard">
+      <div class="num">5</div>
+      <h4>De Groote Peel</h4>
+      <p>Total buildings. A protected raised-bog wetland that is essentially uninhabited.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 02</span>
+    <h2>Building functions, by park</h2>
+    <span class="sec-meta">Stacked composition</span>
+  </div>
+  <p>Each park has its own building character. <b>Drentsche Aa</b> is dominated by residential and outbuildings — a working agricultural landscape. <b>Van Gogh</b> shows more mixed-use. Smaller parks like <b>Utrechtse Heuvelrug</b> have a high share of <b>lodging</b> (logiesfunctie) — hotels, B&Bs, recreation parks tucked into the woods.</p>
+  <div class="grid-3" style="margin-top:24px">
+    <div class="chart-card">
+      <h3>Composition by park</h3>
+      <div class="sub">Buildings inside boundary, by function · log scale</div>
+      <div class="chart-wrap tall"><canvas id="stackChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Function totals</h3>
+      <div class="sub">All 70,789 buildings combined</div>
+      <div class="chart-wrap tall"><canvas id="donutChart"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 03</span>
+    <h2>When were they built?</h2>
+    <span class="sec-meta">Construction year</span>
+  </div>
+  <p>Older than you might expect. <b>1,666 buildings</b> in Dutch national parks were built before 1900 — many are listed monumenten, churches, farmhouses, hunting lodges. The 1945–1979 boom shows up here too, but post-park-designation construction (2000+) is also substantial: park status restricts but doesn't freeze building activity.</p>
+  <div class="chart-card">
+    <h3>Construction era of buildings inside parks</h3>
+    <div class="sub">Active buildings (status: Pand in gebruik)</div>
+    <div class="chart-wrap"><canvas id="eraChart"></canvas></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 04</span>
+    <h2>Live map</h2>
+    <span class="sec-meta">PMTiles · 11.4M buildings · 21 parks</span>
+  </div>
+  <p>Both layers stream directly from cloud-native PMTiles via HTTP range requests — no tile server, no GeoJSON download. The full <b>933 MB BAG GeoParquet</b> is published as a PMTiles tile pyramid; the parks file is just a few KB. Buildings start appearing at zoom 9; toggle filters to colour by function. Click any park to fly to it. Toggle "All Netherlands" to compare in-park building patterns to the surroundings.</p>
+
+  <div id="map-card" style="margin-top:20px">
+    <div class="map-controls">
+      <span class="label">Function</span>
+      <button class="fpill on" data-f="residential"><span class="swatch" style="background:#b04a26"></span>Residential</button>
+      <button class="fpill on" data-f="lodging"><span class="swatch" style="background:#c89934"></span>Lodging</button>
+      <button class="fpill on" data-f="industrial"><span class="swatch" style="background:#3a4d5c"></span>Industrial</button>
+      <button class="fpill on" data-f="mixed"><span class="swatch" style="background:#6b3a52"></span>Mixed</button>
+      <button class="fpill on" data-f="other"><span class="swatch" style="background:#2d6b6b"></span>Other use</button>
+      <button class="fpill on" data-f="none"><span class="swatch" style="background:#8a8775"></span>No units</button>
+      <span style="margin-left:auto"></span>
+      <span class="label">Show</span>
+      <button class="fpill on" id="modeToggle">Inside parks only</button>
+      <span class="label">Fly to</span>
+      <select class="park-select" id="parkSelect"><option value="">— pick a park —</option></select>
+    </div>
+    <div style="position:relative">
+      <div id="map"></div>
+      <div class="zoom-hint" id="zoomHint">↑ Zoom into a park to see individual buildings (z9+)</div>
+    </div>
+    <div class="map-legend">
+      <span>● Buildings rendered from <b>bag-light.pmtiles</b> · ▢ Parks from <b>nationale_parken.pmtiles</b></span>
+      <span id="visCount">Showing all functions</span>
+      <span>Basemap: CARTO Positron</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="sec-num">§ 05</span>
+    <h2>The full ranking</h2>
+    <span class="sec-meta">All 21 parks · click row to fly</span>
+  </div>
+  <div class="chart-card" style="padding:20px 28px">
+    <table id="rankTable">
+      <thead><tr>
+        <th>#</th><th>Park</th><th class="right">Hectares</th><th class="right">Buildings</th><th class="right">Per ha</th><th class="bar-cell"></th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div>Data sources: Kadaster BAG Light (CC0) · RVO Nationale Parken (CC-BY) · served via the <a href="https://source.coop/cholmes/portolan-nl">Portolan NL</a> catalog on Source Cooperative</div>
+  <div style="margin-top:8px">Method: bbox prefilter via GeoParquet covering struct → ST_Within(ST_Centroid(building), park) in DuckDB · CRS EPSG:28992 throughout · Map: live PMTiles streamed from object storage via HTTP range requests</div>
+  <div style="margin-top:8px">Dataset queried: 11,367,850 buildings · 21 parks · Result: 70,789 buildings inside park boundaries</div>
+</footer>
+
+</div>
+
+<script>
+// ========== Inline dashboard data ==========
+window.DASHBOARD_DATA = {"park_summary": [{"name": "Drentsche Aa", "ha": 33122.9728, "n": 37270, "per_ha": 1.125, "center": [6.6675, 52.9955], "bbox": [6.5399, 52.8598, 6.8244, 53.1888], "by_func": {"none": 18328, "residential": 14655, "other": 1146, "lodging": 2106, "mixed": 817, "industrial": 218}}, {"name": "Van Gogh", "ha": 49264.96812730058, "n": 25126, "per_ha": 0.51, "center": [5.3056, 51.5772], "bbox": [5.004, 51.4085, 5.6232, 51.6939], "by_func": {"residential": 6346, "none": 15184, "mixed": 1066, "other": 713, "lodging": 1493, "industrial": 324}}, {"name": "Utrechtse Heuvelrug", "ha": 11342.39730857, "n": 3524, "per_ha": 0.311, "center": [5.3949, 52.0528], "bbox": [5.239, 51.9576, 5.5661, 52.1339], "by_func": {"mixed": 85, "none": 1906, "other": 247, "residential": 636, "lodging": 606, "industrial": 44}}, {"name": "Weerribben-Wieden", "ha": 10269.65458682, "n": 1899, "per_ha": 0.185, "center": [6.028, 52.7259], "bbox": [5.8895, 52.6429, 6.1547, 52.8156], "by_func": {"residential": 680, "none": 918, "other": 77, "mixed": 83, "industrial": 23, "lodging": 118}}, {"name": "De Alde Feanen", "ha": 3374.27267392, "n": 570, "per_ha": 0.169, "center": [5.9185, 53.1178], "bbox": [5.8463, 53.0812, 5.9845, 53.1544], "by_func": {"none": 378, "mixed": 10, "residential": 71, "other": 25, "lodging": 86}}, {"name": "Dwingelderveld", "ha": 3765.68095267, "n": 432, "per_ha": 0.115, "center": [6.4093, 52.8086], "bbox": [6.3378, 52.7774, 6.4808, 52.8415], "by_func": {"none": 244, "lodging": 130, "residential": 39, "industrial": 2, "other": 12, "mixed": 5}}, {"name": "Drents-Friese Wold", "ha": 5551.62905075, "n": 376, "per_ha": 0.068, "center": [6.3097, 52.9024], "bbox": [6.22, 52.8579, 6.3857, 52.9531], "by_func": {"residential": 30, "none": 252, "lodging": 82, "mixed": 3, "other": 7, "industrial": 2}}, {"name": "Zuid-Kennemerland", "ha": 3567.64933333, "n": 332, "per_ha": 0.093, "center": [4.5837, 52.414], "bbox": [4.5392, 52.3665, 4.6322, 52.4549], "by_func": {"none": 201, "residential": 74, "mixed": 6, "other": 35, "lodging": 3, "industrial": 13}}, {"name": "Duinen van Texel", "ha": 4685.20287886, "n": 206, "per_ha": 0.044, "center": [4.7678, 53.076], "bbox": [4.7083, 52.9832, 4.8709, 53.183], "by_func": {"other": 22, "industrial": 8, "residential": 32, "none": 94, "mixed": 24, "lodging": 26}}, {"name": "De Biesbosch", "ha": 8980.20483428, "n": 183, "per_ha": 0.02, "center": [4.7689, 51.7534], "bbox": [4.6329, 51.7088, 4.8908, 51.8183], "by_func": {"industrial": 4, "none": 89, "other": 28, "residential": 33, "mixed": 9, "lodging": 20}}, {"name": "Oosterschelde", "ha": 37988.58679633, "n": 178, "per_ha": 0.005, "center": [3.9689, 51.578], "bbox": [3.6799, 51.4281, 4.2232, 51.7059], "by_func": {"none": 68, "other": 27, "residential": 14, "lodging": 62, "industrial": 3, "mixed": 4}}, {"name": "Nieuw Land", "ha": 28903.82779, "n": 138, "per_ha": 0.005, "center": [5.3527, 52.5307], "bbox": [5.1732, 52.3923, 5.4712, 52.6907], "by_func": {"none": 80, "other": 18, "industrial": 5, "residential": 26, "lodging": 5, "mixed": 4}}, {"name": "De Maasduinen", "ha": 4170.53330787, "n": 109, "per_ha": 0.026, "center": [6.0996, 51.5826], "bbox": [5.9881, 51.4987, 6.2006, 51.6732], "by_func": {"none": 75, "residential": 19, "mixed": 3, "lodging": 2, "industrial": 3, "other": 7}}, {"name": "Veluwezoom", "ha": 5014.75204548, "n": 106, "per_ha": 0.021, "center": [6.012, 52.0511], "bbox": [5.9337, 52.001, 6.0903, 52.0931], "by_func": {"residential": 25, "none": 49, "lodging": 23, "other": 7, "mixed": 2}}, {"name": "Grenspark De Zoom - Kalmthoutse Heide", "ha": 3832.78750938, "n": 101, "per_ha": 0.026, "center": [4.4107, 51.3985], "bbox": [4.3446, 51.362, 4.4653, 51.4269], "by_func": {"none": 65, "residential": 15, "lodging": 14, "other": 3, "mixed": 3, "industrial": 1}}, {"name": "Sallandse Heuvelrug", "ha": 2732.68187287, "n": 73, "per_ha": 0.027, "center": [6.414, 52.3381], "bbox": [6.3633, 52.2946, 6.4681, 52.3687], "by_func": {"none": 37, "lodging": 3, "residential": 27, "mixed": 3, "industrial": 1, "other": 2}}, {"name": "De Meinweg", "ha": 2063.81754618, "n": 57, "per_ha": 0.028, "center": [6.1168, 51.166], "bbox": [6.0312, 51.1406, 6.1753, 51.1929], "by_func": {"other": 4, "none": 33, "mixed": 3, "residential": 12, "lodging": 5}}, {"name": "De Hoge Veluwe", "ha": 5104.64090214, "n": 47, "per_ha": 0.009, "center": [5.8343, 52.0829], "bbox": [5.7814, 52.0322, 5.8803, 52.1266], "by_func": {"none": 35, "residential": 5, "other": 5, "mixed": 1, "industrial": 1}}, {"name": "Schiermonnikoog", "ha": 6838.28806698, "n": 31, "per_ha": 0.005, "center": [6.2341, 53.4882], "bbox": [6.1114, 53.4465, 6.397, 53.5193], "by_func": {"industrial": 1, "none": 10, "lodging": 6, "other": 11, "residential": 3}}, {"name": "Lauwersmeer", "ha": 6009.97342822, "n": 26, "per_ha": 0.004, "center": [6.2033, 53.3598], "bbox": [6.1301, 53.317, 6.2972, 53.4141], "by_func": {"other": 7, "none": 14, "mixed": 2, "lodging": 2, "industrial": 1}}, {"name": "De Groote Peel", "ha": 1314.04652204, "n": 5, "per_ha": 0.004, "center": [5.8174, 51.3467], "bbox": [5.7796, 51.3258, 5.8586, 51.3676], "by_func": {"other": 1, "none": 3, "residential": 1}}], "eras": {"1980-1999": 13016, "1945-1979": 21918, "2000-2025": 25528, "1900-1944": 8591, "1800-1899": 1413, "Pre-1800": 253, "Future/unknown": 70}, "func_totals": {"none": 38063, "residential": 22743, "other": 2404, "lodging": 4792, "mixed": 2133, "industrial": 654}};
+
+// ========== Color palette ==========
+const COLORS = {
+  residential: '#b04a26',
+  lodging: '#c89934',
+  industrial: '#3a4d5c',
+  mixed: '#6b3a52',
+  other: '#2d6b6b',
+  none: '#8a8775',
+};
+const FUNC_LABELS = {
+  residential: 'Residential', lodging: 'Lodging', industrial: 'Industrial',
+  mixed: 'Mixed-use', other: 'Other', none: 'No units'
+};
+
+const summary = window.DASHBOARD_DATA.park_summary;
+const funcs = ['residential','lodging','industrial','mixed','other','none'];
+
+// ========== Stacked bar chart (top 10 parks) ==========
+const top10 = summary.slice(0, 10);
+new Chart(document.getElementById('stackChart'), {
+  type: 'bar',
+  data: {
+    labels: top10.map(p => p.name),
+    datasets: funcs.map(f => ({
+      label: FUNC_LABELS[f],
+      data: top10.map(p => p.by_func[f] || 0),
+      backgroundColor: COLORS[f],
+      borderWidth: 0,
+    }))
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    scales: {
+      x: { type: 'logarithmic', stacked: false, grid: { color: '#c8bfa9', drawTicks: false }, ticks: { font: { family: 'DM Mono', size: 10 }, color: '#4a5240' } },
+      y: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Sora', size: 12 }, color: '#1c2419' } }
+    },
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { family: 'DM Mono', size: 10 }, color: '#4a5240', boxWidth: 12, padding: 12 } },
+      tooltip: { titleFont: { family: 'Sora' }, bodyFont: { family: 'DM Mono', size: 11 } }
+    }
+  }
+});
+
+// ========== Donut chart ==========
+const funcTotals = window.DASHBOARD_DATA.func_totals;
+const sortedFuncs = Object.entries(funcTotals).sort((a,b) => b[1]-a[1]);
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: sortedFuncs.map(([f]) => FUNC_LABELS[f] || f),
+    datasets: [{
+      data: sortedFuncs.map(([_,n]) => n),
+      backgroundColor: sortedFuncs.map(([f]) => COLORS[f] || '#999'),
+      borderColor: '#f3eee4', borderWidth: 3,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '55%',
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { family: 'DM Mono', size: 10 }, color: '#4a5240', boxWidth: 12, padding: 10 } },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const total = ctx.dataset.data.reduce((a,b)=>a+b, 0);
+            const pct = ((ctx.raw / total) * 100).toFixed(1);
+            return `${ctx.label}: ${ctx.raw.toLocaleString()} (${pct}%)`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// ========== Era chart ==========
+const eraOrder = ['Pre-1800','1800-1899','1900-1944','1945-1979','1980-1999','2000-2025'];
+const eraData = window.DASHBOARD_DATA.eras;
+new Chart(document.getElementById('eraChart'), {
+  type: 'bar',
+  data: {
+    labels: eraOrder,
+    datasets: [{
+      data: eraOrder.map(e => eraData[e] || 0),
+      backgroundColor: ['#6b3a52','#3a4d5c','#2d6b6b','#4a6b3a','#c89934','#b04a26'],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'DM Mono', size: 11 }, color: '#1c2419' } },
+      y: { grid: { color: '#c8bfa9' }, ticks: { font: { family: 'DM Mono', size: 10 }, color: '#4a5240', callback: (v) => v.toLocaleString() } }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toLocaleString()} buildings` } }
+    }
+  }
+});
+
+// ========== Map with PMTiles ==========
+const protocol = new pmtiles.Protocol();
+maplibregl.addProtocol('pmtiles', protocol.tile);
+
+const BAG_PMT = 'https://data.source.coop/cholmes/portolan-nl/kadaster/panden/bag-light.pmtiles';
+const PARKS_PMT = 'https://data.source.coop/cholmes/portolan-nl/rvo/nationale_parken/nationale_parken.pmtiles';
+
+// Map gebruiksdoel → category for fill-color via case expression.
+// gebruiksdoel can be NULL, single value, or comma-separated mixed-use string.
+function buildingColorExpression() {
+  return [
+    'case',
+    ['!=', ['typeof', ['get', 'gebruiksdoel']], 'string'], COLORS.none,
+    ['in', ',', ['get', 'gebruiksdoel']], COLORS.mixed,
+    ['==', ['get', 'gebruiksdoel'], 'woonfunctie'], COLORS.residential,
+    ['==', ['get', 'gebruiksdoel'], 'logiesfunctie'], COLORS.lodging,
+    ['==', ['get', 'gebruiksdoel'], 'industriefunctie'], COLORS.industrial,
+    COLORS.other
+  ];
+}
+
+// Build filter: ['any', ...clauses for each active category]
+function buildingFilterExpression(activeSet) {
+  const clauses = [];
+  if (activeSet.has('residential'))
+    clauses.push(['==', ['get','gebruiksdoel'], 'woonfunctie']);
+  if (activeSet.has('lodging'))
+    clauses.push(['==', ['get','gebruiksdoel'], 'logiesfunctie']);
+  if (activeSet.has('industrial'))
+    clauses.push(['==', ['get','gebruiksdoel'], 'industriefunctie']);
+  if (activeSet.has('mixed'))
+    clauses.push(['all',
+      ['==', ['typeof', ['get','gebruiksdoel']], 'string'],
+      ['in', ',', ['get','gebruiksdoel']]
+    ]);
+  if (activeSet.has('other'))
+    clauses.push(['all',
+      ['==', ['typeof', ['get','gebruiksdoel']], 'string'],
+      ['!', ['in', ',', ['get','gebruiksdoel']]],
+      ['!=', ['get','gebruiksdoel'], 'woonfunctie'],
+      ['!=', ['get','gebruiksdoel'], 'logiesfunctie'],
+      ['!=', ['get','gebruiksdoel'], 'industriefunctie']
+    ]);
+  if (activeSet.has('none'))
+    clauses.push(['!=', ['typeof', ['get','gebruiksdoel']], 'string']);
+  if (clauses.length === 0) return ['==', ['get','gebruiksdoel'], '__nothing__'];
+  return ['any', ...clauses];
+}
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+  center: [5.6, 52.4],
+  zoom: 6.5,
+  minZoom: 5,
+  maxZoom: 16,
+});
+map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+const activeF = new Set(['residential','lodging','industrial','mixed','other','none']);
+let insideOnly = true; // start with "Inside parks only" — buildings outside parks are hidden
+
+map.on('load', () => {
+  // ===== Parks PMTiles source =====
+  map.addSource('parks', {
+    type: 'vector',
+    url: 'pmtiles://' + PARKS_PMT,
+    attribution: 'Nationale Parken © RVO/PDOK',
+  });
+
+  // Park glow / fill — sits underneath buildings to tint them green
+  map.addLayer({
+    id: 'parks-glow',
+    type: 'fill',
+    source: 'parks',
+    'source-layer': 'nationale_parken',
+    paint: {
+      'fill-color': '#4a6b3a',
+      'fill-opacity': [
+        'interpolate', ['linear'], ['zoom'],
+        5, 0.22,
+        9, 0.16,
+        12, 0.10,
+        15, 0.06
+      ],
+    }
+  });
+
+  // ===== BAG PMTiles source =====
+  map.addSource('bag', {
+    type: 'vector',
+    url: 'pmtiles://' + BAG_PMT,
+    attribution: 'BAG © Kadaster',
+  });
+
+  // Buildings OUTSIDE parks — neutral gray, faded. Hidden by default ("inside only" mode).
+  // When user toggles to "All Netherlands", these become visible.
+  map.addLayer({
+    id: 'buildings-outside',
+    type: 'fill',
+    source: 'bag',
+    'source-layer': 'panden',
+    minzoom: 11,
+    paint: {
+      'fill-color': '#bdb6a4',
+      'fill-opacity': [
+        'interpolate', ['linear'], ['zoom'],
+        11, 0.35, 14, 0.55
+      ],
+      'fill-outline-color': 'rgba(0,0,0,0.12)',
+    },
+    layout: { visibility: insideOnly ? 'none' : 'visible' }
+  });
+
+  // Buildings (colored by function). The same PMTiles layer is rendered everywhere,
+  // but the colored rendering is what users "see" — and inside parks the green glow
+  // tints them, visually communicating "inside the park".
+  // The "inside parks only" mode just hides the gray outside layer above so it looks
+  // like buildings only exist inside parks (helped by basemap context).
+  map.addLayer({
+    id: 'buildings-fill',
+    type: 'fill',
+    source: 'bag',
+    'source-layer': 'panden',
+    minzoom: 9,
+    paint: {
+      'fill-color': buildingColorExpression(),
+      'fill-opacity': [
+        'interpolate', ['linear'], ['zoom'],
+        9, 0.65, 11, 0.85, 14, 0.95
+      ],
+      'fill-outline-color': 'rgba(28, 36, 25, 0.4)',
+    },
+    filter: buildingFilterExpression(activeF),
+  });
+
+  // Park outline ON TOP — strong line keeps boundary crisp over building fills
+  map.addLayer({
+    id: 'parks-outline',
+    type: 'line',
+    source: 'parks',
+    'source-layer': 'nationale_parken',
+    paint: {
+      'line-color': '#2c4220',
+      'line-width': [
+        'interpolate', ['linear'], ['zoom'],
+        5, 1.4, 10, 2.2, 14, 3.0
+      ],
+      'line-opacity': 0.92,
+    }
+  });
+
+  // Park labels — Sora-ish via the basemap's available font stack
+  map.addLayer({
+    id: 'parks-label',
+    type: 'symbol',
+    source: 'parks',
+    'source-layer': 'nationale_parken',
+    layout: {
+      'text-field': ['get', 'naam'],
+      'text-font': ['Open Sans Semibold','Arial Unicode MS Bold'],
+      'text-size': ['interpolate', ['linear'], ['zoom'], 6, 11, 10, 14, 13, 16],
+      'text-letter-spacing': 0.06,
+      'text-allow-overlap': false,
+      'text-padding': 6,
+    },
+    paint: {
+      'text-color': '#1c2419',
+      'text-halo-color': '#f3eee4',
+      'text-halo-width': 2,
+    }
+  });
+
+  // Click on park polygon
+  map.on('click', 'parks-glow', (e) => {
+    const f = e.features[0];
+    const p = summary.find(x => x.name === f.properties.naam);
+    if (!p) return;
+    const html = `<b>${f.properties.naam}</b><br>${Math.round(p.ha).toLocaleString()} ha · ${p.n.toLocaleString()} buildings<br>${p.per_ha} per ha`;
+    new maplibregl.Popup({ closeButton: false }).setLngLat(e.lngLat).setHTML(html).addTo(map);
+  });
+  map.on('mouseenter', 'parks-glow', () => map.getCanvas().style.cursor = 'pointer');
+  map.on('mouseleave', 'parks-glow', () => map.getCanvas().style.cursor = '');
+
+  // Click on a building
+  map.on('click', 'buildings-fill', (e) => {
+    const props = e.features[0].properties;
+    let funcLabel = 'No dwelling units';
+    if (props.gebruiksdoel) {
+      funcLabel = props.gebruiksdoel.includes(',')
+        ? `Mixed-use: ${props.gebruiksdoel}`
+        : props.gebruiksdoel;
+    }
+    const html = `
+      <b>Building ${props.identificatie}</b><br>
+      Built: ${props.bouwjaar}<br>
+      Use: ${funcLabel}<br>
+      Status: ${props.status}
+    `;
+    new maplibregl.Popup({ closeButton: false }).setLngLat(e.lngLat).setHTML(html).addTo(map);
+  });
+  map.on('mouseenter', 'buildings-fill', () => map.getCanvas().style.cursor = 'pointer');
+  map.on('mouseleave', 'buildings-fill', () => map.getCanvas().style.cursor = '');
+
+  // Hide zoom hint once the user zooms in
+  const updateHint = () => {
+    document.getElementById('zoomHint').classList.toggle('hidden', map.getZoom() >= 9);
+  };
+  map.on('zoom', updateHint);
+  updateHint();
+
+  // ----- Filter pill UI -----
+  function applyFilter() {
+    if (map.getLayer('buildings-fill')) {
+      map.setFilter('buildings-fill', buildingFilterExpression(activeF));
+    }
+    const arr = [...activeF];
+    document.getElementById('visCount').textContent =
+      arr.length === 6 ? 'Showing all functions' :
+      arr.length === 0 ? 'Hidden' :
+      `Showing: ${arr.map(f => FUNC_LABELS[f]).join(', ')}`;
+  }
+  document.querySelectorAll('.fpill[data-f]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const f = pill.dataset.f;
+      if (activeF.has(f)) { activeF.delete(f); pill.classList.remove('on'); }
+      else { activeF.add(f); pill.classList.add('on'); }
+      applyFilter();
+    });
+  });
+
+  // ----- Inside parks only / All Netherlands toggle -----
+  const modeBtn = document.getElementById('modeToggle');
+  modeBtn.addEventListener('click', () => {
+    insideOnly = !insideOnly;
+    modeBtn.classList.toggle('on', insideOnly);
+    modeBtn.textContent = insideOnly ? 'Inside parks only' : 'All Netherlands';
+    if (map.getLayer('buildings-outside')) {
+      map.setLayoutProperty('buildings-outside', 'visibility', insideOnly ? 'none' : 'visible');
+    }
+  });
+});
+
+// ===== Park dropdown + table click → fly =====
+const parkSelect = document.getElementById('parkSelect');
+[...summary].sort((a,b) => a.name.localeCompare(b.name)).forEach(p => {
+  const opt = document.createElement('option');
+  opt.value = p.name; opt.textContent = p.name;
+  parkSelect.appendChild(opt);
+});
+
+function flyToPark(name) {
+  const p = summary.find(x => x.name === name);
+  if (!p) return;
+  map.fitBounds([[p.bbox[0], p.bbox[1]], [p.bbox[2], p.bbox[3]]], {
+    padding: 60, duration: 1400, maxZoom: 13
+  });
+  document.getElementById('map-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+parkSelect.addEventListener('change', e => { if (e.target.value) flyToPark(e.target.value); });
+
+// ===== Table =====
+const tbody = document.querySelector('#rankTable tbody');
+const maxN = Math.max(...summary.map(p => p.n));
+summary.forEach((p, i) => {
+  const tr = document.createElement('tr');
+  tr.classList.add('clickable');
+  const w = Math.max(2, (p.n / maxN) * 200);
+  tr.innerHTML = `
+    <td>${i+1}</td>
+    <td><b>${p.name}</b></td>
+    <td class="right">${Math.round(p.ha).toLocaleString()}</td>
+    <td class="right">${p.n.toLocaleString()}</td>
+    <td class="right">${p.per_ha}</td>
+    <td><div class="bar" style="width:${w}px"></div></td>
+  `;
+  tr.addEventListener('click', () => flyToPark(p.name));
+  tbody.appendChild(tr);
+});
+
+// Forward navigation keys to parent deck when embedded as iframe
+if (window.parent !== window) {
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const nav = ['b','f',' '];
+    if (nav.includes(e.key)) {
+      window.parent.dispatchEvent(new KeyboardEvent('keydown', {key: e.key, code: e.code, bubbles: true}));
+      e.preventDefault();
+    }
+  });
+}
+</script>
+</body>
+</html>

@@ -30,7 +30,28 @@
   "STAC is the metadata layer that ties everything together. It's simple JSON that describes any cloud-native geospatial asset — a COG, a GeoParquet file, a point cloud. You can search STAC collections through a standard API, or go fully serverless with STAC-GeoParquet, which puts the entire catalog into a queryable file on object storage.",
   "So we have these powerful formats. They've mostly been used independently — COG for better raster distribution, STAC for satellite imagery catalogs. But what if we brought them all together into a coherent architecture for SDI?",
   "We decided to go beyond just a thought experiment, leveraging claude to build a complete set of tools to prove out this concept. This idea is quite centered in the Netherlands, with a collaborator named Nissim who is based in The Hague leading the charge. I'm going to share some super early demos of what we've built, and then conclude with the ways that this approach can build a better SDI.",
-  "I'll now do a live demonstration — but let me flag the key things to watch for. First: it's fully interactive. Second: everything you see is powered by files on object storage — there is no server running. Third: an AI can query this data directly, right now. And fourth: all of this was set up with a few command-line instructions.",
+  "This is the landing page. If you want to explore on your own you can check it out at https://portolan-sdi.github.io/portolan-nl-demo/. It's similar to other data portals, you can see all the different data providers and layers to explore. Before I dive deep into it I want to say that the reason we were able to pull this together so quickly is due to all the deep, hard work that you all have done to make data available and document it all. You'll see a lot of familiar things throughout, as I liberally borrowed from all the great work that makes up the Dutch SDI today.",
+  "The key thing that I did was translate all the data into the cloud native formats, which in turn enable a high degree of interactivity on the web. There are zero servers powering anything that you're seeing, it's all done with these cloud native formats. You can explore datasets directly in context, with default styles that are part of the infrastructure and easily reusable by others. For this demo I just sucked down a subset of all the data on PDOK, but I tried to get a decently representative sample.",
+  "I apologize that I did most of it in English - it is a goal of mine to learn Dutch, but it's been a busy time since I arrived. Everything should work just as well in Dutch. You can interact with the data without downloading it. For now I've just limited it to smaller subsets of the data, but it's also possible to build full interactive spreadsheet type environments that can handle the full data. But for me it's always frustrating to have to download the data just to see what kind of columns are in it, and what some of the sample values are. And I've hooked it up so you can jump from the rows to the map (though it's not actually working perfectly).",
+  "And you can interact with large datasets, all without servers. This is 11 million buildings, all stored as a single PMTiles in the backend. And it still works great. This is just a naive PMTiles translation - there are more advanced techniques to provider nicer overviews, as you can see it looks a bit weird when you're zoomed out. But I'd much prefer to have some indicator of where data is, even if it's a bit off. Making even better defaults is one of the areas we'll be exploring more.",
+  "And you can easily set different styles. This is one of the things we're pioneering, to have style files as part of the STAC entry. For those with lots of OGC experience this was the SLD spec hoped to do, but it hasn't updated for the modern geospatial world.",
+  "This is using a mapbox style, but it's emerged as a de facto standard, with OpenLayers and MapLibre both supporting it. You can see what one looks like, it's just a bunch of json.",
+  "The key is that we provide it as an artifact that's linked to and available for anyone.",
+  "We can also handle raster imagery, using COG's or Zarr. I downloaded a bunch of aerial imagery and reprocessed it to be more cloud native. So you can navigate down to what you want, zoom in to full resolution, and download it. One thing I like is that everything is bookmarkable and shareable - everything has its own resource online.",
+  "You can also use a more map-first interface like STAC map. And there's lots of other tools that support STAC, so if you put data in portolan then many other tools will be able to understand it. A map first interface like this makes it easier to navigate to where you want, like an aerial photo of where we are today.",
+  "So I want to show a bit of what's under the hood. You can view the source of any page, and changing anything is just editing these files. All the interactivity of the maps is due to the cloud native formats. A key thing with this is that this particular view is just one possible way to view the same data.",
+  "I made custom styling of the portolan viewer for this demo. You can see our generic browser, where you can point at any portolan catalog. And then you can also see it in STAC Browser, which is a more generic tool, but works great with this, since it's all STAC.",
+  "So all of this works by directly putting data on an object store like amazon s3. But I used a nicer tool built on top of aws, called source cooperative. It's the main project of Radiant Earth, who started STAC and run the Cloud Native Geospatial forum. Think of it like GitHub for data. I love it because it's free hosting for any open data, they've got about 5 petabytes up there, so the 50 gigabytes I put up for this are nothing.",
+  "For Portolan we made readme's for everything, so that you can easily use the source coop interface and understand what's on it. And then you also will see my latest experiment, with the llms.txt to communicate directly with AI agents. The cloud native formats are ideal for agents to work with, so my hypothesis has been that if we just point the agents in the right direction with cloud native geospatial that it will do incredible things.",
+  "I tested this hypothesis last week, and the results were quite compelling. I started with this prompt, to just explore the buildings data.",
+  "The weird start of the prompt is using a 'skill'. Setting this up is a bit specialized, but I am optimistic that within a few months the special prompt won't be needed. But what this prompt relies on is the reading-portolan 'skill'. I used the web version, so I had to upload it, but you can also easily install it in other environments.",
+  "And it started plugging away. Installing various dependencies and querying the data to understand it. The skill tells it what tools it needs to make sense of cloud native geospatial data.",
+  "It didn't manage to make any visualizations, but it gave a ton of interesting insight into the dataset. It's a gigabyte of data, but it can all be queryed directly by Claude using DuckDB. And it pulled out insights on permitting / construction, buliding use, timelines, including finding a dip in construction with world war II, largest buildings, average footprint by building function, and more.",
+  "So then I decided to see if it could do some spatial analysis, with buildings and national parks.",
+  "This time I encouraged it to make me visualizations and maps. It chugged along for awhile, sharing insights along the way as it explored, and this time it spit out a html file for me to load up.",
+  "The results were pretty awesome. What I'm showing now is the complete results, embedded into this presentation. It gave some nice summary stats about parks and the number of buildings inside, and some nice charts to visualize the data. And the live map is pretty awesome (select a few from the drop down, then click on the top one on 'the full ranking'). It did a nice job styling the PMTiles, and it lets you control the layer nicely, with nice interactivity.",
+  "So I decided to have it take another go, this time taking the monuments dataset that's just points and doing some spatial joins with the buildings, but keeping with the national park theme. You can see its dialog with me as it ran through things. I will note these weren't 'instant' results, more go get a coffee and come back and see what happened. It's doing deep spatial analysis with many queries to multiple datasets, and surfacing interesting insights.",
+  "And again it came up with something really compelling. It pulled out a bunch of interesting higher level statistics, like average construction year and oldest match. It explained the results of the joining, that archeology doesn't match buildings. I thought the construction era graph was interesting, and made sense that it's the older buildings that are monuments, then info on the largest and oldest ones. And then it made a compelling map, with all three layers. Note that I only did the most minimal of iterations on these, it was mostly a 'one-shot' where it got compelling results without having to keep telling it what to do. But of course you could continue to customize it to do all kinds of cool stuff.",
   "So you've seen Portolan in action. Let me now go back to our five requirements and show how Portolan answers each one.",
   "Portolan is built around simple text documents and command-line tools, which is exactly what AI wants to interact with. We can extract all the deep interoperability work done on INSPIRE and other harmonization efforts to clear texts that direct AI on how to make use of the data.",
   "AI is incredibly good at translating any natural language request into the exact query for GeoParquet, so this architecture makes vector data directly available for questions, and easy to build applications around. The core accessibility and AI-first design make it much easier to incorporate into world models, geospatial foundation models, and agentic tools.",
@@ -695,6 +716,23 @@
     color: var(--white);
     font-weight: 500;
   }
+
+  .slide-nav-arrow {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    z-index: 10;
+    width: 48px; height: 96px;
+    background: rgba(28, 36, 25, 0.55);
+    color: #f3eee4;
+    border: none; border-radius: 6px;
+    font-size: 36px; line-height: 1;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+  }
+  .slide-nav-arrow:hover { opacity: 0.9; }
+  .slide-nav-prev { left: 12px; }
+  .slide-nav-next { right: 12px; }
 </style>
 </head>
 <body>
@@ -1213,31 +1251,118 @@
     </div>
   </section>
 
-  <!-- ⑲ DEMO -->
-  <section class="slide-dark" data-label="22 Demo" style="position:relative; align-items:center; justify-content:center;">
-    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.05;" viewBox="0 0 1920 1080" preserveAspectRatio="none">
-      <defs>
-        <pattern id="grid2" width="80" height="80" patternUnits="userSpaceOnUse">
-          <path d="M 80 0 L 0 0 0 80" fill="none" stroke="white" stroke-width="0.5"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#grid2)"/>
-      <g transform="translate(960,540)" stroke="white" stroke-width="0.6" opacity="0.8">
-        <circle cx="0" cy="0" r="160" fill="none"/>
-        <circle cx="0" cy="0" r="280" fill="none"/>
-        <circle cx="0" cy="0" r="400" fill="none"/>
-        <circle cx="0" cy="0" r="520" fill="none"/>
-        <line x1="0" y1="-540" x2="0" y2="540"/>
-        <line x1="-540" y1="0" x2="540" y2="0"/>
-        <line x1="-381" y1="-381" x2="381" y2="381"/>
-        <line x1="381" y1="-381" x2="-381" y2="381"/>
-      </g>
-    </svg>
-    <div style="display:flex; flex-direction:column; align-items:center; text-align:center; z-index:1;">
-      <div class="demo-label" style="margin-bottom:32px;">Live demonstration</div>
-      <div class="demo-title">Portolan</div>
-      <div class="subtitle" style="margin-top:32px; max-width:700px;">Watch for: no servers, full interactivity, AI integration, ease of setup.</div>
-    </div>
+  <!-- ⑲ DEMO: Portolan NL Landing Page -->
+  <section data-label="22 Demo" style="background:#000;padding:0;">
+    <img src="uploads/portolan-nl-landing.png" alt="Portolan NL landing page" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲b DEMO: Portolan browsing -->
+  <section data-label="22a Portolan Browsing" style="background:#000;padding:0;">
+    <img src="uploads/portolan-demo1.gif" alt="Portolan NL browsing demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲c DEMO: GeoParquet browsing -->
+  <section data-label="22b GeoParquet Browsing" style="background:#000;padding:0;">
+    <img src="uploads/geoparquet-portolan.gif" alt="GeoParquet data browsing demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲d DEMO: Buildings PMTiles -->
+  <section data-label="22c Buildings PMTiles" style="background:#000;padding:0;">
+    <img src="uploads/buildings-portolan.gif" alt="Buildings PMTiles demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲e DEMO: Styles -->
+  <section data-label="22d Styles" style="background:#000;padding:0;">
+    <img src="uploads/styles-portolan.gif" alt="Portolan styles demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲f DEMO: Mapbox Style JSON -->
+  <section data-label="22e Mapbox Style JSON" style="background:#000;padding:0;">
+    <img src="uploads/mapbox-style-json.png" alt="Mapbox style JSON example" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲g DEMO: STAC Assets with Styles -->
+  <section data-label="22f STAC Assets Styles" style="background:#000;padding:0;">
+    <img src="uploads/stac-assets-styles.png" alt="STAC assets with style artifacts" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲h DEMO: COG imagery -->
+  <section data-label="22g COG Imagery" style="background:#000;padding:0;">
+    <img src="uploads/cog-portolan.gif" alt="COG aerial imagery demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲i DEMO: STAC Map -->
+  <section data-label="22h STAC Map" style="background:#000;padding:0;">
+    <img src="uploads/stac-map-portolan.gif" alt="STAC Map interface demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲j DEMO: Portolan Source -->
+  <section data-label="22i Portolan Source" style="background:#000;padding:0;">
+    <img src="uploads/portolan-source.gif" alt="Portolan source view demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲k DEMO: Portolan Viewers -->
+  <section data-label="22j Portolan Viewers" style="background:#000;padding:0;">
+    <img src="uploads/portolan-viewers.gif" alt="Portolan viewers demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲l DEMO: Source Cooperative -->
+  <section data-label="22k Source Cooperative" style="background:#000;padding:0;">
+    <img src="uploads/source-coop.gif" alt="Source Cooperative demo" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲m DEMO: Source Coop Portolan Readmes -->
+  <section data-label="22l Source Coop Readmes" style="background:#000;padding:0;">
+    <img src="uploads/source-coop-portolan2.gif" alt="Source Cooperative Portolan readmes and llms.txt" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲n DEMO: AI Prompt -->
+  <section data-label="22m AI Prompt" style="background:#000;padding:0;">
+    <img src="uploads/ai-prompt-buildings.png" alt="AI prompt to explore buildings data" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲o DEMO: AI Skill Reading -->
+  <section data-label="22n AI Skill Reading" style="background:#000;padding:0;">
+    <img src="uploads/ai-skill-reading.png" alt="AI reading Portolan skill and exploring catalog" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲p DEMO: AI Exploring Data -->
+  <section data-label="22o AI Exploring Data" style="background:#000;padding:0;">
+    <img src="uploads/ai-exploring-data.png" alt="AI exploring BAG Light dataset" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲q DEMO: Claude Analysis Results -->
+  <section data-label="22p Claude Analysis" style="background:#000;padding:0;">
+    <img src="uploads/portolan-claude-2.gif" alt="Claude analyzing BAG buildings data" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲r DEMO: National Parks -->
+  <section data-label="22q National Parks" style="background:#000;padding:0;">
+    <img src="uploads/national-parks-portolan.png" alt="National Parks in Portolan NL" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- ⑲s DEMO: Claude Spatial Analysis -->
+  <section data-label="22r Claude Spatial Analysis" style="background:#000;padding:0;">
+    <img src="uploads/portolan-claude-3.gif" alt="Claude performing spatial analysis on buildings and parks" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- INTERACTIVE: Parks & Buildings dashboard -->
+  <section data-label="22b Parks Buildings" style="background:#f3eee4; padding:0; position:relative;">
+    <iframe src="parks_buildings.html" style="width:100%; height:100%; border:none;" loading="lazy"></iframe>
+    <button class="slide-nav-arrow slide-nav-prev" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index - 1, 'click')">&#8249;</button>
+    <button class="slide-nav-arrow slide-nav-next" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index + 1, 'click')">&#8250;</button>
+  </section>
+
+  <!-- INTERACTIVE: Monuments in National Parks -->
+  <section data-label="22c Monuments" style="background:#f3eee4; padding:0; position:relative;">
+    <iframe src="monuments.html" style="width:100%; height:100%; border:none;" loading="lazy"></iframe>
+    <button class="slide-nav-arrow slide-nav-prev" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index - 1, 'click')">&#8249;</button>
+    <button class="slide-nav-arrow slide-nav-next" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index + 1, 'click')">&#8250;</button>
+  </section>
+
+  <!-- ⑲t DEMO: Claude Monuments Results -->
+  <section data-label="22s Claude Monuments Results" style="background:#000;padding:0;">
+    <img src="uploads/crushed-it-claude.gif" alt="Claude monuments analysis results" style="width:100%;height:100%;object-fit:contain;">
   </section>
 
   <!-- ⑳ PORTOLAN REVISITED (section header) -->
