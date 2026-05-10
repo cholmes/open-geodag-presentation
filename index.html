@@ -1,5 +1,156 @@
 <!DOCTYPE html>
-<html>
-<head><meta http-equiv="refresh" content="0; url=opengeo-dag.html"></head>
-<body></body>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portolan — Cloud-Native SDI | Open Geodag 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: oklch(16% 0.04 240);
+    color: oklch(93% 0.008 240);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+  }
+
+  .container {
+    max-width: 720px;
+    width: 100%;
+  }
+
+  .eyebrow {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: oklch(75% 0.16 75);
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    color: oklch(70% 0.015 240);
+    margin-bottom: 40px;
+    line-height: 1.5;
+  }
+
+  .rule {
+    width: 60px;
+    height: 3px;
+    background: oklch(75% 0.16 75);
+    border-radius: 2px;
+    margin-bottom: 32px;
+  }
+
+  .description {
+    font-size: 17px;
+    line-height: 1.7;
+    color: oklch(78% 0.012 240);
+    margin-bottom: 48px;
+  }
+
+  .links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .link-card {
+    flex: 1;
+    min-width: 220px;
+    background: oklch(22% 0.05 240);
+    border: 1px solid oklch(100% 0 0 / 0.08);
+    border-radius: 12px;
+    padding: 28px 32px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .link-card:hover {
+    border-color: oklch(75% 0.16 75 / 0.5);
+    background: oklch(25% 0.05 240);
+  }
+
+  .link-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: oklch(75% 0.16 75);
+    margin-bottom: 8px;
+  }
+
+  .link-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .link-desc {
+    font-size: 14px;
+    color: oklch(60% 0.02 240);
+    line-height: 1.5;
+  }
+
+  .meta {
+    margin-top: 48px;
+    font-size: 14px;
+    color: oklch(45% 0.02 240);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .meta a {
+    color: oklch(60% 0.02 240);
+    text-decoration: none;
+  }
+
+  .meta a:hover {
+    color: oklch(75% 0.16 75);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="eyebrow">Open Geodag 2026 &middot; May 12</div>
+  <h1>A Cloud Native Geo Upgrade for Spatial Data Infrastructure</h1>
+  <div class="subtitle">Chris Holmes</div>
+  <div class="rule"></div>
+  <div class="description">
+    An exploration of how cloud-native geospatial formats — GeoParquet, COG, PMTiles, STAC, and more — can fundamentally upgrade how Spatial Data Infrastructures work. Featuring Portolan, a new open-source framework for building serverless SDIs that are AI-first, easy to implement, infinitely scalable, low cost, and fully sovereign. Includes live demonstrations with Dutch government data and AI-powered spatial analysis.
+  </div>
+  <div class="links">
+    <a href="opengeo-dag.html" class="link-card">
+      <div class="link-label">Presentation</div>
+      <div class="link-title">Slide Deck</div>
+      <div class="link-desc">Full presentation with interactive demos and embedded maps.</div>
+    </a>
+    <a href="presenter.html" class="link-card">
+      <div class="link-label">Speaker</div>
+      <div class="link-title">Presenter View</div>
+      <div class="link-desc">Speaker notes, slide preview, and navigation controls.</div>
+    </a>
+  </div>
+  <div class="meta">
+    <a href="https://github.com/cholmes/open-geodag-presentation">github.com/cholmes/open-geodag-presentation</a>
+  </div>
+</div>
+</body>
 </html>
