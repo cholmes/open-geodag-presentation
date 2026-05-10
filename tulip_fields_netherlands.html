@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tulip Fields of the Netherlands — BRP 2025</title>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+<script src="https://unpkg.com/pmtiles@3.2.0/dist/pmtiles.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: #eee; }
+
+  #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+  /* Panel */
+  #panel {
+    position: absolute;
+    top: 16px; left: 16px;
+    width: 300px;
+    background: rgba(15, 15, 30, 0.92);
+    border: 1px solid rgba(255,100,150,0.3);
+    border-radius: 12px;
+    padding: 18px;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+  #panel h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ff6fa3;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+  #panel .subtitle {
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 14px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stat-box {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+  }
+  .stat-box .num { font-size: 22px; font-weight: 700; color: #ff6fa3; }
+  .stat-box .label { font-size: 10px; color: #aaa; margin-top: 2px; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+
+  .bulb-list { margin-bottom: 14px; }
+  .bulb-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 4px;
+    padding: 5px 4px;
+  }
+  .bulb-row:hover { background: rgba(255,255,255,0.07); }
+  .bulb-row.active { background: rgba(255,100,160,0.15); }
+  .swatch {
+    width: 12px; height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .bulb-name { flex: 1; color: #ddd; }
+  .bulb-count { color: #888; font-size: 11px; }
+  .bulb-bar-wrap { width: 40px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+  .bulb-bar { height: 4px; border-radius: 2px; }
+
+  .toggle-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px; font-size: 12px; color: #bbb;
+  }
+  .toggle {
+    width: 36px; height: 20px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle.on { background: #ff6fa3; }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    background: white;
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: left 0.2s;
+  }
+  .toggle.on::after { left: 19px; }
+
+  .source-link {
+    font-size: 10px; color: #666; margin-top: 10px;
+  }
+  .source-link a { color: #888; }
+
+  /* Popup */
+  .maplibregl-popup-content {
+    background: rgba(15,15,30,0.95) !important;
+    color: #eee !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255,100,150,0.3) !important;
+    padding: 12px !important;
+    font-family: 'Segoe UI', sans-serif !important;
+    font-size: 12px !important;
+    min-width: 180px;
+  }
+  .maplibregl-popup-tip { border-top-color: rgba(15,15,30,0.95) !important; }
+  .popup-title { font-weight: 700; font-size: 13px; color: #ff6fa3; margin-bottom: 6px; }
+  .popup-row { display: flex; justify-content: space-between; gap: 12px; margin: 2px 0; }
+  .popup-label { color: #888; }
+  .popup-val { color: #eee; font-weight: 500; }
+
+  /* Nav buttons */
+  .nav-btns {
+    display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .nav-btn {
+    font-size: 10px;
+    padding: 4px 9px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    cursor: pointer;
+    color: #ccc;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: rgba(255,100,160,0.25); border-color: #ff6fa3; color: #ff6fa3; }
+
+  #loading {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    background: rgba(15,15,30,0.95);
+    padding: 24px 32px;
+    border-radius: 12px;
+    text-align: center;
+    z-index: 20;
+    border: 1px solid rgba(255,100,150,0.3);
+  }
+  #loading .tulip { font-size: 36px; }
+  #loading p { margin-top: 10px; color: #bbb; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="loading">
+  <div class="tulip">🌷</div>
+  <p>Loading tulip fields…</p>
+</div>
+
+<div id="panel">
+  <h1>🌷 Tulip Fields of the Netherlands</h1>
+  <p class="subtitle">BRP Gewaspercelen 2025 · RVO · Source Cooperative</p>
+
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div class="num">2,987</div>
+      <div class="label">Tulip parcels</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">43%</div>
+      <div class="label">of all bloembollen</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">6,905</div>
+      <div class="label">Total bulb parcels</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">2025</div>
+      <div class="label">Registration year</div>
+    </div>
+  </div>
+
+  <p class="section-title">Flower Bulb Crops — click to highlight</p>
+  <div class="bulb-list" id="bulbList"></div>
+
+  <p class="section-title">Layers</p>
+  <div class="toggle-row">
+    <div class="toggle on" id="toggleTulips" onclick="toggleLayer('tulips')"></div>
+    <span>Tulips only</span>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle on" id="toggleOther" onclick="toggleLayer('other')"></div>
+    <span>Other bloembollen</span>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle" id="toggleAll" onclick="toggleLayer('all')"></div>
+    <span>All crops (background)</span>
+  </div>
+
+  <p class="section-title" style="margin-top:12px">Jump to region</p>
+  <div class="nav-btns">
+    <div class="nav-btn" onclick="flyTo(4.53, 52.23, 11)">Bollenstreek</div>
+    <div class="nav-btn" onclick="flyTo(4.80, 52.75, 10)">Noord-Holland</div>
+    <div class="nav-btn" onclick="flyTo(5.60, 52.50, 9)">Flevoland</div>
+    <div class="nav-btn" onclick="flyTo(4.75, 52.45, 7)">Netherlands</div>
+  </div>
+
+  <div class="source-link">
+    Data: <a href="https://source.coop/cholmes/portolan-nl" target="_blank">source.coop/cholmes/portolan-nl</a> · CC0
+  </div>
+</div>
+
+<script>
+const PMTILES_URL = 'https://data.source.coop/cholmes/portolan-nl/rvo/brp_gewaspercelen/brp_gewaspercelen.pmtiles';
+
+// Flower bulb data
+const bulbData = [
+  { name: 'Tulp', gewas: 'Tulp, bloembollen en -knollen', count: 2987, color: '#FF3D7F', codes: [1004, 985, 986] },
+  { name: 'Lelie', gewas: 'Lelie, bloembollen en -knollen', count: 1374, color: '#FF9F43', codes: [1002, 979] },
+  { name: 'Narcis', gewas: 'Narcis, bloembollen en -knollen', count: 554, color: '#FFE44D', codes: [1003, 982, 983] },
+  { name: 'Overige bloemen', gewas: 'Overige bloemen, bloembollen en -knollen', count: 530, color: '#C0E870', codes: [1006] },
+  { name: 'Hyacint', gewas: 'Hyacint, bloembollen en - knollen', count: 402, color: '#A78BFA', codes: [999, 970] },
+  { name: 'Dahlia', gewas: 'Dahlia, bloembollen en - knollen', count: 226, color: '#F472B6', codes: [997, 965, 964] },
+  { name: 'Gladiool', gewas: 'Gladiool, bloembollen en - knollen', count: 193, color: '#34D399', codes: [998, 967] },
+  { name: 'Sierui', gewas: 'Sierui, bloembollen en -knollen', count: 141, color: '#60A5FA', codes: [1012] },
+  { name: 'Krokus', gewas: 'Krokus, bloembollen en - knollen', count: 129, color: '#818CF8', codes: [1001] },
+  { name: 'Zantedeschia', gewas: 'Zantedeschia, bloembollen en -knollen', count: 107, color: '#FCD34D', codes: [1005] },
+];
+const maxCount = bulbData[0].count;
+
+// Build bulb list
+const bulbList = document.getElementById('bulbList');
+let activeFilter = null;
+bulbData.forEach((b, i) => {
+  const row = document.createElement('div');
+  row.className = 'bulb-row';
+  row.id = `bulb-${i}`;
+  const pct = Math.round(b.count / maxCount * 100);
+  row.innerHTML = `
+    <div class="swatch" style="background:${b.color}"></div>
+    <span class="bulb-name">${b.name}</span>
+    <div class="bulb-bar-wrap"><div class="bulb-bar" style="width:${pct}%;background:${b.color}"></div></div>
+    <span class="bulb-count">${b.count.toLocaleString()}</span>
+  `;
+  row.onclick = () => highlightBulb(i);
+  bulbList.appendChild(row);
+});
+
+// PMTiles protocol
+const protocol = new pmtiles.Protocol();
+maplibregl.addProtocol('pmtiles', protocol.tile);
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: {
+    version: 8,
+    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+    sources: {
+      carto: {
+        type: 'raster',
+        tiles: ['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],
+        tileSize: 256,
+        attribution: '© CartoDB © OpenStreetMap'
+      },
+      brp: {
+        type: 'vector',
+        url: `pmtiles://${PMTILES_URL}`
+      }
+    },
+    layers: [
+      { id: 'basemap', type: 'raster', source: 'carto' },
+      // All crops (background, dimmed)
+      {
+        id: 'all-crops',
+        type: 'fill',
+        source: 'brp',
+        'source-layer': 'brp_gewaspercelen',
+        layout: { visibility: 'none' },
+        paint: {
+          'fill-color': '#3a4a3a',
+          'fill-opacity': 0.5
+        }
+      },
+      // Other bloembollen (non-tulip)
+      {
+        id: 'other-bulbs',
+        type: 'fill',
+        source: 'brp',
+        'source-layer': 'brp_gewaspercelen',
+        filter: ['in', ['get', 'gewascode'],
+          ['literal', [1002,979,1003,982,983,999,970,1006,997,965,964,998,967,1012,1001,1005,1007,1015,6795,6803,6797]]],
+        layout: { visibility: 'visible' },
+        paint: {
+          'fill-color': [
+            'match', ['get', 'gewascode'],
+            [1002, 979], '#FF9F43',
+            [1003, 982, 983], '#FFE44D',
+            [999, 970], '#A78BFA',
+            [1006], '#C0E870',
+            [997, 965, 964], '#F472B6',
+            [998, 967], '#34D399',
+            [1012], '#60A5FA',
+            [1001], '#818CF8',
+            [1005], '#FCD34D',
+            '#aaaaaa'
+          ],
+          'fill-opacity': 0.75
+        }
+      },
+      // Other bloembollen outline
+      {
+        id: 'other-bulbs-line',
+        type: 'line',
+        source: 'brp',
+        'source-layer': 'brp_gewaspercelen',
+        filter: ['in', ['get', 'gewascode'],
+          ['literal', [1002,979,1003,982,983,999,970,1006,997,965,964,998,967,1012,1001,1005,1007,1015,6795,6803,6797]]],
+        layout: { visibility: 'visible' },
+        paint: { 'line-color': '#000', 'line-width': 0.3, 'line-opacity': 0.4 }
+      },
+      // Tulip fields
+      {
+        id: 'tulip-fill',
+        type: 'fill',
+        source: 'brp',
+        'source-layer': 'brp_gewaspercelen',
+        filter: ['in', ['get', 'gewascode'], ['literal', [1004, 985, 986]]],
+        layout: { visibility: 'visible' },
+        paint: {
+          'fill-color': '#FF3D7F',
+          'fill-opacity': 0.9
+        }
+      },
+      // Tulip outline
+      {
+        id: 'tulip-line',
+        type: 'line',
+        source: 'brp',
+        'source-layer': 'brp_gewaspercelen',
+        filter: ['in', ['get', 'gewascode'], ['literal', [1004, 985, 986]]],
+        layout: { visibility: 'visible' },
+        paint: { 'line-color': '#FF1060', 'line-width': 0.6 }
+      },
+      // Highlight layer (for bulb filtering)
+      {
+        id: 'highlight-fill',
+        type: 'fill',
+        source: 'brp',
+        'source-layer': 'brp_gewaspercelen',
+        filter: ['==', ['get', 'gewascode'], -1],
+        layout: { visibility: 'visible' },
+        paint: { 'fill-color': '#FFFFFF', 'fill-opacity': 0.95 }
+      },
+      {
+        id: 'highlight-line',
+        type: 'line',
+        source: 'brp',
+        'source-layer': 'brp_gewaspercelen',
+        filter: ['==', ['get', 'gewascode'], -1],
+        layout: { visibility: 'visible' },
+        paint: { 'line-color': '#FFD700', 'line-width': 1.5 }
+      }
+    ]
+  },
+  center: [4.53, 52.23],
+  zoom: 10,
+  maxBounds: [[2.5, 50.5], [8.0, 54.0]]
+});
+
+map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+
+map.on('load', () => {
+  document.getElementById('loading').style.display = 'none';
+});
+
+// Popup
+const popup = new maplibregl.Popup({ closeButton: false, maxWidth: '280px' });
+
+map.on('mousemove', ['tulip-fill', 'other-bulbs', 'highlight-fill'], (e) => {
+  map.getCanvas().style.cursor = 'pointer';
+  const f = e.features[0];
+  if (!f) return;
+  const p = f.properties;
+  const code = p.gewascode;
+  const bulb = bulbData.find(b => b.codes.includes(code));
+  const color = bulb ? bulb.color : '#aaa';
+
+  popup.setLngLat(e.lngLat).setHTML(`
+    <div class="popup-title" style="color:${color}">${p.gewas || 'Unknown'}</div>
+    <div class="popup-row"><span class="popup-label">Category</span><span class="popup-val">${p.category || '–'}</span></div>
+    <div class="popup-row"><span class="popup-label">Crop code</span><span class="popup-val">${p.gewascode}</span></div>
+    <div class="popup-row"><span class="popup-label">Year</span><span class="popup-val">${p.jaar || 2025}</span></div>
+    <div class="popup-row"><span class="popup-label">Status</span><span class="popup-val">${p.status || 'definitief'}</span></div>
+  `).addTo(map);
+});
+
+map.on('mouseleave', ['tulip-fill', 'other-bulbs', 'highlight-fill'], () => {
+  map.getCanvas().style.cursor = '';
+  popup.remove();
+});
+
+// Layer state
+const layerState = { tulips: true, other: true, all: false };
+
+function toggleLayer(which) {
+  layerState[which] = !layerState[which];
+  document.getElementById(`toggle${which.charAt(0).toUpperCase()+which.slice(1)}`).className = 'toggle' + (layerState[which] ? ' on' : '');
+
+  if (which === 'tulips') {
+    const v = layerState.tulips ? 'visible' : 'none';
+    map.setLayoutProperty('tulip-fill', 'visibility', v);
+    map.setLayoutProperty('tulip-line', 'visibility', v);
+  }
+  if (which === 'other') {
+    const v = layerState.other ? 'visible' : 'none';
+    map.setLayoutProperty('other-bulbs', 'visibility', v);
+    map.setLayoutProperty('other-bulbs-line', 'visibility', v);
+  }
+  if (which === 'all') {
+    const v = layerState.all ? 'visible' : 'none';
+    map.setLayoutProperty('all-crops', 'visibility', v);
+  }
+}
+
+// Highlight a specific bulb
+function highlightBulb(idx) {
+  const b = bulbData[idx];
+  // Reset previous
+  document.querySelectorAll('.bulb-row').forEach(r => r.classList.remove('active'));
+
+  if (activeFilter === idx) {
+    activeFilter = null;
+    map.setFilter('highlight-fill', ['==', ['get', 'gewascode'], -1]);
+    map.setFilter('highlight-line', ['==', ['get', 'gewascode'], -1]);
+    map.setPaintProperty('highlight-fill', 'fill-color', '#FFFFFF');
+  } else {
+    activeFilter = idx;
+    document.getElementById(`bulb-${idx}`).classList.add('active');
+    const filter = ['in', ['get', 'gewascode'], ['literal', b.codes]];
+    map.setFilter('highlight-fill', filter);
+    map.setFilter('highlight-line', filter);
+    map.setPaintProperty('highlight-fill', 'fill-color', b.color);
+  }
+}
+
+function flyTo(lng, lat, zoom) {
+  map.flyTo({ center: [lng, lat], zoom, speed: 1.4 });
+}
+</script>
+</body>
+</html>
