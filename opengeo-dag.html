@@ -18,44 +18,48 @@
   "The vision that animated INSPIRE was genuinely compelling. A federated European spatial data infrastructure — discoverable, interoperable, openly accessible to all. But I believe that a 'better' SDI from what we have today is possible. I see five different ways we could 'upgrade'.",
   "Let's start with the most interesting one first. Our infrastructure was not built with AI or agents in mind. But it's fast becoming the way many people interact with the world. The current SDI software is mostly slow API's and javascript portals. This isn't the way AI wants to interact with the data. What AI wants is to just get the full data as quickly as possible, along with as much useful metadata about what the data represents. So we need to rebuild our SDI's with AI as a first-class citizen, as it can make spatial data much more accessible and useful to a much wider number of people.",
   "The second requirement is ease of implementation. Getting data into a compliant SDI today is a serious undertaking. You need to convert data to the right schemas, stand up WMS and WFS services, manage databases, keep services running. That requires database administrators, web service experts, and staff on call. There's been a vision that any government agency, even a small town, could be part of the SDI. Today that's not realistic, but I believe we can drastically lower the barrier for non-experts to share their data.",
-  "The rise of AI means that services must support agents as well as humans. And AI agents don't just query an API once — they make many requests suck down entire datasets. In the current paradigm, that means spinning up more servers and more clusters just to stay available to the public. Your SDI can become a victim of its own success. The ideal infrastructure should handle any amount of traffic without breaking a sweat.",
+  "The rise of AI means that services must support agents as well as humans. And AI agents don't just query an API once — they make many requests in order to suck down entire datasets. In the current paradigm, that means spinning up more servers and more clusters just to stay available to the public. Your SDI can become a victim of its own success. The ideal infrastructure should handle any amount of traffic without breaking a sweat.",
   "That scalability can't come at a massive price. Sharing data publicly is a public good — it shouldn't be an organizational burden. Storage costs, server costs, staff costs — they add up fast. And if a dataset becomes very popular it shouldn't cause a budget shortfall.",
-  "Finally: sovereignty. We've seen a growing and important movement toward sovereign software to have control over the full stack of software and services within a country. I believe this matters deeply, and I'm glad it's gaining traction here in Europe. SDI's should not be dependent on foreign clouds and software vendors.",
-  "So that's my take on what a better SDI would look like. For the past several years, an incredible global community has been building a new way of working with geospatial data. We call it cloud-native geospatial. At its heart is a set of formats that eliminate the need for a server — instead, they leverage the intrinsic capabilities of cloud storage to serve data efficiently, at scale. I believe these provide the right foundation to fundamentally upgrade how SDI's work. Let me give you a quick tour of the key formats.",
+  "We're seeing a growing and important movement to prioritize having control over the full stack of software and services within a country. I believe this matters deeply, and I'm glad it's gaining traction here in Europe. SDI's should not be dependent on foreign clouds and software vendors.",
+  "So that's my take of what a better SDI would look like. And I believe that almost all the technology needed to enable this is already developed. It's the ecosystem called Cloud Native Geospatial, and I'll give a brief tour to be sure we're all on the same page.",
+  "At the heart of the ecosystem is a set of formats that eliminate the need for a server. Instead, they leverage the intrinsic capabilities of cloud storage to serve data efficiently, at scale. I believe these provide the right foundation to fundamentally upgrade how SDI's work.",
   "Cloud Optimized GeoTIFF's proved out this approach of streaming geospatial data on the cloud instead of passing it around or requiring a big web server.",
-  "Zarr excels at multi-dimensional data, and there's now petabytes of data on weather & climate modeling.",
+  "Zarr excels at multi-dimensional data, and there's now petabytes of data on weather & climate modeling. And ESA is transitioning all Copernicus Sentinel missions to Zarr as their new cloud-native standard format.",
   "COPC is a bit newer, and uses the exact same COG playbook - take an established format and organize it better for the cloud.",
-  "GeoParquet is the cloud-native format for vector data. It's the geospatial extension of Apache Parquet — the most popular columnar format in the data world. Tools like DuckDB, Pandas, BigQuery, and Snowflake read it natively, so you can run SQL directly on a GeoParquet file sitting in object storage. No server, no database — just analysis-ready vector data.",
-  "PMTiles is the visualization complement to the analysis formats. Where GeoParquet and COG are about querying and processing data, PMTiles is about displaying it. It packages all your map tiles into a single file that clients read directly from storage — no tile server needed. Upload one file and you have a fully interactive web map.",
-  "STAC is the metadata layer that ties everything together. It's simple JSON that describes any cloud-native geospatial asset — a COG, a GeoParquet file, a point cloud. You can search STAC collections through a standard API, or go fully serverless with STAC-GeoParquet, which puts the entire catalog into a queryable file on object storage.",
+  "GeoParquet provides vector data, leveraging the Parquet format that has become standard for any large non-geospatial data. Most SQL engines now can stream from it directly as a remote table, and GeoParquet provides geospatial types.",
+  "PMTiles is the visualization complement — where GeoParquet and COG handle analysis, PMTiles handles display. It packages map tiles into a single file that clients read directly from storage. No tile server needed.",
+  "STAC is the metadata layer that ties everything together. It's simple JSON that describes any cloud-native geospatial asset — a COG, a GeoParquet file, a point cloud. You can search STAC collections through an OGC Features API, or go fully serverless with STAC-GeoParquet, which puts the entire catalog into a queryable file on object storage.",
   "So we have these powerful formats. They've mostly been used independently — COG for better raster distribution, STAC for satellite imagery catalogs. But what if we brought them all together into a coherent architecture for SDI?",
   "We decided to go beyond just a thought experiment, leveraging claude to build a complete set of tools to prove out this concept. This idea is quite centered in the Netherlands, with a collaborator named Nissim who is based in The Hague leading the charge. I'm going to share some super early demos of what we've built, and then conclude with the ways that this approach can build a better SDI.",
-  "This is the landing page. If you want to explore on your own you can check it out at https://portolan-sdi.github.io/portolan-nl-demo/. It's similar to other data portals, you can see all the different data providers and layers to explore. Before I dive deep into it I want to say that the reason we were able to pull this together so quickly is due to all the deep, hard work that you all have done to make data available and document it all. You'll see a lot of familiar things throughout, as I liberally borrowed from all the great work that makes up the Dutch SDI today.",
-  "The key thing that I did was translate all the data into the cloud native formats, which in turn enable a high degree of interactivity on the web. There are zero servers powering anything that you're seeing, it's all done with these cloud native formats. You can explore datasets directly in context, with default styles that are part of the infrastructure and easily reusable by others. For this demo I just sucked down a subset of all the data on PDOK, but I tried to get a decently representative sample.",
-  "I apologize that I did most of it in English - it is a goal of mine to learn Dutch, but it's been a busy time since I arrived. Everything should work just as well in Dutch. You can interact with the data without downloading it. For now I've just limited it to smaller subsets of the data, but it's also possible to build full interactive spreadsheet type environments that can handle the full data. But for me it's always frustrating to have to download the data just to see what kind of columns are in it, and what some of the sample values are. And I've hooked it up so you can jump from the rows to the map (though it's not actually working perfectly).",
-  "And you can interact with large datasets, all without servers. This is 11 million buildings, all stored as a single PMTiles in the backend. And it still works great. This is just a naive PMTiles translation - there are more advanced techniques to provider nicer overviews, as you can see it looks a bit weird when you're zoomed out. But I'd much prefer to have some indicator of where data is, even if it's a bit off. Making even better defaults is one of the areas we'll be exploring more.",
-  "And you can easily set different styles. This is one of the things we're pioneering, to have style files as part of the STAC entry. For those with lots of OGC experience this was the SLD spec hoped to do, but it hasn't updated for the modern geospatial world.",
-  "This is using a mapbox style, but it's emerged as a de facto standard, with OpenLayers and MapLibre both supporting it. You can see what one looks like, it's just a bunch of json.",
+  "This is the landing page. I'll share the URL so you all can play with it later.",
+  "It's similar to other data portals, you can see all the different data providers and layers to explore. Before I dive deep into it I want to say that the reason we were able to pull this together so quickly is due to all the deep, hard work that you all have done to make data available and document it all. You'll see a lot of familiar things throughout, as I liberally borrowed from all the great work that makes up the Dutch SDI today. The key thing that I did was translate all the data into the cloud native formats, which in turn enable a high degree of interactivity on the web. There are zero servers powering anything that you're seeing, it's all done with these cloud native formats. You can explore datasets directly in context, with default styles that are part of the infrastructure and easily reusable by others. For this demo I just sucked down a subset of all the data on PDOK, but I tried to get a decently representative sample.",
+  "I apologize that I did most of it in English - it is a goal of mine to learn Dutch, but it's been a busy time since I arrived. Everything should work just as well in Dutch. We made it so you can easily not just interact with the map, but also see the non-spatial properties in an interactive table. For now I've just limited it to smaller subsets of the data, but a full-fledged environment to interact with the entire dataset is possible. I believe it's important to easily get a sense of the data without having to talk to an API or download the full thing. And I've hooked it up so you can jump from the rows to the map (though it's not actually working perfectly).",
+  "And you can interact with large datasets, all without servers. This is 11 million buildings, all stored as a single PMTiles on cloud storage. You can zoom in anywhere and see the full resolution data, even visualizing it with different styles. This is just a naive PMTiles translation - there are more advanced techniques to provider nicer overviews, as you can see it looks a bit weird when you're zoomed out. But I'd much prefer to have some indicator of where data is, even if it's a bit off. Making even better defaults is one of the areas we'll be exploring more.",
+  "This shows off how you can visualize cloud-native data with different styles. This is one of the things we're pioneering, to have style files as part of the STAC entry. For those with lots of OGC experience this was the SLD spec hoped to do, but it hasn't updated for the modern geospatial world. This is using a mapbox style, but it's emerged as a de facto standard, with OpenLayers and MapLibre both supporting it.",
+  "You can see what one looks like, it's just a bunch of json.",
   "The key is that we provide it as an artifact that's linked to and available for anyone.",
   "We can also handle raster imagery, using COG's or Zarr. I downloaded a bunch of aerial imagery and reprocessed it to be more cloud native. So you can navigate down to what you want, zoom in to full resolution, and download it. One thing I like is that everything is bookmarkable and shareable - everything has its own resource online.",
   "You can also use a more map-first interface like STAC map. And there's lots of other tools that support STAC, so if you put data in portolan then many other tools will be able to understand it. A map first interface like this makes it easier to navigate to where you want, like an aerial photo of where we are today.",
-  "So I want to show a bit of what's under the hood. You can view the source of any page, and changing anything is just editing these files. All the interactivity of the maps is due to the cloud native formats. A key thing with this is that this particular view is just one possible way to view the same data.",
+  "So I want to show a bit of what's under the hood. You can view the source of any page, and changing anything is just editing these files. All the interactivity of the maps is due to the cloud native formats. A key thing with this is that this particular view is just one possible way to view the same data. So this text file has all the information and links, and can be used by many different tools.",
   "I made custom styling of the portolan viewer for this demo. You can see our generic browser, where you can point at any portolan catalog. And then you can also see it in STAC Browser, which is a more generic tool, but works great with this, since it's all STAC.",
   "So all of this works by directly putting data on an object store like amazon s3. But I used a nicer tool built on top of aws, called source cooperative. It's the main project of Radiant Earth, who started STAC and run the Cloud Native Geospatial forum. Think of it like GitHub for data. I love it because it's free hosting for any open data, they've got about 5 petabytes up there, so the 50 gigabytes I put up for this are nothing.",
   "For Portolan we made readme's for everything, so that you can easily use the source coop interface and understand what's on it. And then you also will see my latest experiment, with the llms.txt to communicate directly with AI agents. The cloud native formats are ideal for agents to work with, so my hypothesis has been that if we just point the agents in the right direction with cloud native geospatial that it will do incredible things.",
   "I tested this hypothesis last week, and the results were quite compelling. I started with this prompt, to just explore the buildings data.",
   "The weird start of the prompt is using a 'skill'. Setting this up is a bit specialized, but I am optimistic that within a few months the special prompt won't be needed. But what this prompt relies on is the reading-portolan 'skill'. I used the web version, so I had to upload it, but you can also easily install it in other environments.",
   "And it started plugging away. Installing various dependencies and querying the data to understand it. The skill tells it what tools it needs to make sense of cloud native geospatial data.",
-  "It didn't manage to make any visualizations, but it gave a ton of interesting insight into the dataset. It's a gigabyte of data, but it can all be queryed directly by Claude using DuckDB. And it pulled out insights on permitting / construction, buliding use, timelines, including finding a dip in construction with world war II, largest buildings, average footprint by building function, and more.",
+  "It didn't manage to make any visualizations, but it gave a ton of interesting insight into the dataset. It's a gigabyte of data, but it can all be queryed directly by Claude using DuckDB, since it can stream GeoParquet data. Claude inspected the data and made sense of the columns and then ran a bunch of analysis. It pulled out insights on permitting / construction, buliding use - that 50% are residential and 10% commercial, timelines, including finding a dip in construction with world war II, largest buildings - guessing that the top ones were huge greenhouse complexes treated as single buildings, average footprint by building function, and more.",
   "So then I decided to see if it could do some spatial analysis, with buildings and national parks.",
   "This time I encouraged it to make me visualizations and maps. It chugged along for awhile, sharing insights along the way as it explored, and this time it spit out a html file for me to load up.",
   "The results were pretty awesome. What I'm showing now is the complete results, embedded into this presentation. It gave some nice summary stats about parks and the number of buildings inside, and some nice charts to visualize the data. And the live map is pretty awesome (select a few from the drop down, then click on the top one on 'the full ranking'). It did a nice job styling the PMTiles, and it lets you control the layer nicely, with nice interactivity.",
   "So I decided to have it take another go, this time taking the monuments dataset that's just points and doing some spatial joins with the buildings, but keeping with the national park theme. You can see its dialog with me as it ran through things. I will note these weren't 'instant' results, more go get a coffee and come back and see what happened. It's doing deep spatial analysis with many queries to multiple datasets, and surfacing interesting insights.",
   "And again it came up with something really compelling. It pulled out a bunch of interesting higher level statistics, like average construction year and oldest match. It explained the results of the joining, that archeology doesn't match buildings. I thought the construction era graph was interesting, and made sense that it's the older buildings that are monuments, then info on the largest and oldest ones. And then it made a compelling map, with all three layers. Note that I only did the most minimal of iterations on these, it was mostly a 'one-shot' where it got compelling results without having to keep telling it what to do. But of course you could continue to customize it to do all kinds of cool stuff.",
-  "So you've seen Portolan in action. Let me now go back to our five requirements and show how Portolan answers each one.",
-  "Portolan is built around simple text documents and command-line tools, which is exactly what AI wants to interact with. We can extract all the deep interoperability work done on INSPIRE and other harmonization efforts to clear texts that direct AI on how to make use of the data.",
+  "The core thing that enables it all is the architecture of cloud native tools plus open source software. LLM's do much, much better with code that is open, since there is so much more to train on. So making full mapping applications is much easier, this is an app I didn't even ask for as I was asking about tulips. And I think interacting with SDI's is going to shift from one or two applications to everyone just creating their own web apps to do exactly what they want.",
+  "Or even more likely is it'll shift to just directly interacting with the data through chat.",
+  "I started with a simple question about tulips, but then just started asking questions about crops in the netherlands in general. The initial results were less interesting to me with all the grasslands, so I just asked it to focus on crops. It brought up cool insights, putting it into interactive graphs, by count and by area, and higlighting some interesting facts, interpreting the data into more meaningful infomration. And since it knew about the Portolan SDI it could easily find other layers, like the provinces to do the spatial joins for per province statistics. I think this is the future of spatial data infrastructure, where it powers much more accurate results in AI by making the data fully accessible.",
+  "And I believe we're actually most of the way there. Cloud-native geospatial formats are widely adopted, and Portolan brings it all together to bridge the gap between AI and spatial data. And I believe that once we get sufficient good data in these formats that we won't even need special ai 'skills' - our SDI's will be part of the overall information infrastructure that everyone can access through AI. So let's go back to our original requirements and show how Portolan answers each one. Let me now go back to our five requirements and show how Portolan answers each one.",
+  "Portolan is built around simple text documents and command-line tools, which is exactly what AI wants to interact with. We can extract all the deep interoperability work done on INSPIRE and other harmonization efforts in to clear texts that direct AI on how to make use of the data.",
   "AI is incredibly good at translating any natural language request into the exact query for GeoParquet, so this architecture makes vector data directly available for questions, and easy to build applications around. The core accessibility and AI-first design make it much easier to incorporate into world models, geospatial foundation models, and agentic tools.",
-  "Command-line tools and static text files are where AI tooling shines, so you can use Claude or OpenAI agents to just point at a collection of files and it will easily understand all that it can and translate into the structure of Portolan.",
+  "Command-line tools and static text files are where AI tooling shines, so you can use Claude or OpenAI agents to just point at a collection of files and it will easily understand all that it can and translate into the structure of Portolan. The time I spent on getting the data ready for this site was hours, not days or weeks - I could lean on claude to do most all the tedious work. And it should get even easier, where most anyone with well formatted and documented data could publish it in hours. And the AI tools can also help formatting and documenting it.",
   "The standardized core means other tools can interact with it easily. You get a great data browser, map, and QGIS plugin for free. I believe this ecosystem will rapidly develop more capabilities so you have fully interactive tools for users with very little effort.",
   "Since Portolan's architecture is built static files the scalability is handled by the cloud provider. This means its ability to scale is almost infinite, at tiny fractions of the costs of running clusters of ArcGIS Server or GeoServer.",
   "There are only two costs to run a Portolan SDI — storage and egress. Storage is incredibly cheap for vector data, on the order of dollars per month. Large raster sets can cost more, but it's a fraction of the price of running a server. You can also turn on requester-pays, and Source Cooperative will host open government data for free.",
@@ -783,7 +787,7 @@
   <!-- ③ GEOSERVER — where I started -->
   <section class="slide-dark2" data-label="03 GeoServer">
     <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-      <img src="uploads/geoserver_logo.png" alt="GeoServer" style="max-width:85%;max-height:75%;object-fit:contain;">
+      <img src="uploads/geoserver_logo.png" alt="GeoServer" style="max-width:100%;max-height:90%;object-fit:contain;">
     </div>
   </section>
 
@@ -832,7 +836,7 @@
         <div class="cols-2" style="gap:80px;align-items:center;">
           <!-- Visual: big AI icon -->
           <div style="display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 320 320" width="320" height="320" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 320 320" width="460" height="460" xmlns="http://www.w3.org/2000/svg">
               <circle cx="160" cy="160" r="140" fill="oklch(100% 0 0 / 0.04)" stroke="oklch(75% 0.16 75)" stroke-width="1.5" stroke-opacity="0.25"/>
               <!-- Central brain node -->
               <circle cx="160" cy="160" r="36" fill="oklch(75% 0.16 75)" opacity="0.15"/>
@@ -860,7 +864,7 @@
           <div style="display:flex;flex-direction:column;gap:32px;">
             <div class="format-split-bullet">Current SDI was not built for AI or agents.</div>
             <div class="format-split-bullet">AI needs full data and rich metadata, fast.</div>
-            <div class="format-split-bullet">Rebuild SDI with AI as a first-class citizen.</div>
+            <div class="format-split-bullet">Upgrade SDI so AI is a first-class citizen.</div>
           </div>
         </div>
       </div>
@@ -884,7 +888,7 @@
         <div class="cols-2" style="gap:80px;align-items:center;">
           <!-- Visual: server stack complexity -->
           <div style="display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 320 320" width="320" height="320" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 320 320" width="460" height="460" xmlns="http://www.w3.org/2000/svg">
               <!-- Stacked complexity boxes -->
               <rect x="40" y="220" width="240" height="40" rx="6" fill="oklch(100% 0 0 / 0.08)" stroke="oklch(75% 0.16 75)" stroke-width="1.5" stroke-opacity="0.5"/>
               <text x="160" y="246" text-anchor="middle" font-family="'DM Mono',monospace" font-size="16" fill="oklch(75% 0.16 75)" opacity="0.8">Database</text>
@@ -927,7 +931,7 @@
         <div class="cols-2" style="gap:80px;align-items:center;">
           <!-- Visual: scaling graph -->
           <div style="display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 340 280" width="380" height="300" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 340 280" width="520" height="420" xmlns="http://www.w3.org/2000/svg">
               <!-- Axes -->
               <line x1="50" y1="230" x2="310" y2="230" stroke="oklch(60% 0.02 240)" stroke-width="1.5"/>
               <line x1="50" y1="230" x2="50" y2="30" stroke="oklch(60% 0.02 240)" stroke-width="1.5"/>
@@ -1013,7 +1017,7 @@
         <div class="cols-2" style="gap:80px;align-items:center;">
           <!-- Visual: shield/Europe -->
           <div style="display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 280 320" width="280" height="320" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 280 320" width="400" height="460" xmlns="http://www.w3.org/2000/svg">
               <!-- Shield shape -->
               <path d="M140 20 L260 70 L260 180 Q260 270 140 310 Q20 270 20 180 L20 70 Z" fill="oklch(100% 0 0 / 0.05)" stroke="oklch(75% 0.16 75)" stroke-width="2" stroke-opacity="0.5"/>
               <!-- EU star ring (simplified, 8 stars) -->
@@ -1046,6 +1050,58 @@
       <div class="section-num" style="color:oklch(40% 0.12 75);">Part II</div>
       <div style="font-size:88px; font-weight:700; letter-spacing:-0.02em; color:var(--text-dark); margin-bottom:32px;">Cloud-Native<br>Geospatial</div>
       <div class="subtitle" style="color:oklch(35% 0.04 75); max-width:800px; font-weight:400;">A community-built set of formats that eliminate the need for a server — and scale through the power of cloud storage.</div>
+    </div>
+  </section>
+
+  <!-- CLOUD-NATIVE FORMATS OVERVIEW -->
+  <section class="slide-dark" data-label="13b Cloud-Native Formats">
+    <div class="pad" style="align-items:center; text-align:center; padding-top:140px;">
+      <div style="background:oklch(96% 0.005 240); border-radius:20px; padding:20px 32px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:56px;">
+        <img src="uploads/cng_logo.png" alt="Cloud-Native Geospatial" style="height:140px; width:auto; object-fit:contain;">
+      </div>
+      <div style="height:48px;"></div>
+      <div class="cols-3" style="gap:48px; width:100%; max-width:1400px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+          <div style="background:oklch(96% 0.005 240); border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:center;">
+            <img src="uploads/cog_logo.png" alt="COG" style="height:80px; width:auto; object-fit:contain;">
+          </div>
+          <div style="font-size:var(--t-small); font-weight:600;">COG</div>
+          <div style="font-size:18px; color:var(--muted);">Cloud-Optimized GeoTIFF</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+          <div style="background:oklch(96% 0.005 240); border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:center;">
+            <img src="uploads/zarr_logo.png" alt="Zarr" style="height:80px; width:auto; object-fit:contain;">
+          </div>
+          <div style="font-size:var(--t-small); font-weight:600;">Zarr</div>
+          <div style="font-size:18px; color:var(--muted);">Cloud-Native Arrays</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+          <div style="background:oklch(96% 0.005 240); border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:center;">
+            <img src="uploads/copc_logo.png" alt="COPC" style="height:80px; width:auto; object-fit:contain;">
+          </div>
+          <div style="font-size:var(--t-small); font-weight:600;">COPC</div>
+          <div style="font-size:18px; color:var(--muted);">Cloud-Optimized Point Cloud</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+          <div style="background:oklch(96% 0.005 240); border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:center;">
+            <img src="uploads/geoparquet_logo.svg" alt="GeoParquet" style="height:80px; width:auto; object-fit:contain;">
+          </div>
+          <div style="font-size:var(--t-small); font-weight:600;">GeoParquet</div>
+          <div style="font-size:18px; color:var(--muted);">Columnar Vector Format</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+          <img src="uploads/pmtiles_logo.svg" alt="PMTiles" style="height:112px; width:auto; object-fit:contain;">
+          <div style="font-size:var(--t-small); font-weight:600;">PMTiles</div>
+          <div style="font-size:18px; color:var(--muted);">Single-File Tile Archive</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+          <div style="background:oklch(96% 0.005 240); border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:center;">
+            <img src="uploads/stac_logo.png" alt="STAC" style="height:80px; width:auto; object-fit:contain;">
+          </div>
+          <div style="font-size:var(--t-small); font-weight:600;">STAC</div>
+          <div style="font-size:18px; color:var(--muted);">SpatioTemporal Asset Catalog</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1093,6 +1149,7 @@
         <div class="format-split-bullets">
           <div class="format-split-bullet">Cloud-native format for multi-dimensional data cubes — think HDF5 or NetCDF, built for the cloud.</div>
           <div class="format-split-bullet">Not backwards compatible like COG/COPC, but getting great traction in climate and earth science.</div>
+          <div class="format-split-bullet">ESA is adopting Zarr for all Copernicus Sentinel missions.</div>
         </div>
       </div>
       <div class="format-split-right">
@@ -1323,7 +1380,7 @@
 
   <!-- ⑲o DEMO: AI Skill Reading -->
   <section data-label="22n AI Skill Reading" style="background:#000;padding:0;">
-    <img src="uploads/ai-skill-reading.png" alt="AI reading Portolan skill and exploring catalog" style="width:100%;height:100%;object-fit:contain;">
+    <img src="uploads/reading-portolan-skill.png" alt="Reading Portolan skill in Claude" style="width:100%;height:100%;object-fit:contain;">
   </section>
 
   <!-- ⑲p DEMO: AI Exploring Data -->
@@ -1353,16 +1410,31 @@
     <button class="slide-nav-arrow slide-nav-next" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index + 1, 'click')">&#8250;</button>
   </section>
 
+  <!-- ⑲t DEMO: Claude Monuments Results -->
+  <section data-label="22c Claude Monuments Results" style="background:#000;padding:0;">
+    <img src="uploads/crushed-it-claude.gif" alt="Claude monuments analysis results" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
   <!-- INTERACTIVE: Monuments in National Parks -->
-  <section data-label="22c Monuments" style="background:#f3eee4; padding:0; position:relative;">
+  <section data-label="22s Monuments" style="background:#f3eee4; padding:0; position:relative;">
     <iframe src="monuments.html" style="width:100%; height:100%; border:none;" loading="lazy"></iframe>
     <button class="slide-nav-arrow slide-nav-prev" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index - 1, 'click')">&#8249;</button>
     <button class="slide-nav-arrow slide-nav-next" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index + 1, 'click')">&#8250;</button>
   </section>
 
-  <!-- ⑲t DEMO: Claude Monuments Results -->
-  <section data-label="22s Claude Monuments Results" style="background:#000;padding:0;">
-    <img src="uploads/crushed-it-claude.gif" alt="Claude monuments analysis results" style="width:100%;height:100%;object-fit:contain;">
+  <!-- DEMO: Tulip Map App -->
+  <section data-label="22t Tulip Map" style="background:#000;padding:0;">
+    <img src="uploads/tulip-map.gif" alt="AI-generated tulip map application" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- DEMO: Tulip Chat Prompt -->
+  <section data-label="22u Tulip Chat" style="background:#000;padding:0;">
+    <img src="uploads/tulip-chat-prompt.png" alt="Chat prompt asking about tulip fields" style="width:100%;height:100%;object-fit:contain;">
+  </section>
+
+  <!-- DEMO: Crop Chat Analysis -->
+  <section data-label="22v Crop Chat" style="background:#000;padding:0;">
+    <img src="uploads/crop-chat.gif" alt="AI chat analyzing Dutch crop data" style="width:100%;height:100%;object-fit:contain;">
   </section>
 
   <!-- ⑳ PORTOLAN REVISITED (section header) -->
@@ -1584,28 +1656,28 @@
             <td style="color:var(--offwhite); border-bottom-color:oklch(100% 0 0 / 0.07);"><strong>Municipality</strong></td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">Vector (BAG, BGT, zoning)</td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~2 GB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 0.05</td>
+            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">incl.</td>
             <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~200 GB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 4</td>
-            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 5</td>
+            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">incl.</td>
+            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 7</td>
           </tr>
           <tr>
             <td style="color:var(--offwhite); border-bottom-color:oklch(100% 0 0 / 0.07);"><strong>Province</strong></td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">Vector + orthophoto</td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~3 TB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 70</td>
+            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 20</td>
             <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~5 TB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 100</td>
-            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 170</td>
+            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 5</td>
+            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 25</td>
           </tr>
           <tr>
             <td style="color:var(--offwhite); border-bottom-color:oklch(100% 0 0 / 0.07);"><strong>National (PDOK-scale)</strong></td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">All registrations + AHN + luchtfoto</td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~80 TB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 1,840</td>
+            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 519</td>
             <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~200 TB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 4,000</td>
-            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 5,840</td>
+            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 200</td>
+            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 720</td>
           </tr>
           <tr style="background:oklch(75% 0.16 75 / 0.08);">
             <td colspan="6" style="font-size:var(--t-label); color:oklch(65% 0.02 240); border-bottom:none;">Source Cooperative: free hosting for open government data</td>
@@ -1614,7 +1686,7 @@
         </tbody>
       </table>
         <div style="margin-top:24px; font-size:18px; color:oklch(45% 0.02 240); line-height:1.8;">
-          Storage: €0.023/GB/mo (S3-compatible, EU region) · Egress: €0.02/GB (European provider avg.) · Requester-pays available for high-traffic datasets<br>
+          Priced on Hetzner Object Storage (German/EU, S3-compatible): €6.49/TB/mo storage incl. 1 TB egress · €1.00/TB additional egress<br>
           National estimate: AHN ~25 TB, luchtfoto ~40 TB, vector registrations ~500 GB, overhead ~15 TB · No server compute, licensing, or staffing costs
         </div>
       </div>
@@ -1640,27 +1712,17 @@
             <div class="format-split-bullet">No foreign vendor in the stack — 100% open source, no servers.</div>
             <div class="format-split-bullet">Cloud-native just needs S3-compatible storage — many European providers qualify.</div>
           </div>
-          <svg viewBox="0 0 320 300" style="width:100%; max-width:400px;" fill="none">
-            <circle cx="160" cy="120" r="90" fill="oklch(75% 0.16 75 / 0.08)" stroke="oklch(75% 0.16 75 / 0.4)" stroke-width="1.5"/>
-            <g transform="translate(160,100)">
-              <circle cx="0" cy="-20" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="19" cy="-6" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="12" cy="16" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="-12" cy="16" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="-19" cy="-6" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="0" cy="-40" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="38" cy="-12" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="24" cy="32" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="-24" cy="32" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="-38" cy="-12" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="10" cy="-32" r="4" fill="oklch(75% 0.16 75)"/>
-              <circle cx="-10" cy="-32" r="4" fill="oklch(75% 0.16 75)"/>
-            </g>
-            <text x="160" y="145" text-anchor="middle" fill="oklch(75% 0.16 75)" font-size="14" font-weight="600" font-family="DM Sans">EU</text>
-            <text x="160" y="240" text-anchor="middle" fill="oklch(70% 0.015 240)" font-size="14" font-family="DM Sans">MinIO · Hetzner · Cloudflare R2</text>
-            <text x="160" y="262" text-anchor="middle" fill="oklch(70% 0.015 240)" font-size="14" font-family="DM Sans">Scaleway · On-premise</text>
-            <text x="160" y="290" text-anchor="middle" fill="oklch(50% 0.02 240)" font-size="12" font-style="italic" font-family="DM Sans">Any S3-compatible storage</text>
-          </svg>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:28px;">
+            <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; max-width:480px;">
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">Hetzner <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">🇩🇪</span></div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">Scaleway <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">🇫🇷</span></div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">OVHcloud <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">🇫🇷</span></div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">IONOS <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">🇩🇪</span></div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">Cloudflare R2</div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">MinIO <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">self-hosted</span></div>
+            </div>
+            <div style="font-size:20px; color:oklch(50% 0.02 240); font-style:italic;">Any S3-compatible storage</div>
+          </div>
         </div>
       </div>
     </div>
