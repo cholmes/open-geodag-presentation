@@ -64,7 +64,8 @@
   "Since Portolan's architecture is built static files the scalability is handled by the cloud provider. This means its ability to scale is almost infinite, at tiny fractions of the costs of running clusters of ArcGIS Server or GeoServer.",
   "There are only two costs to run a Portolan SDI — storage and egress. Storage is incredibly cheap for vector data, on the order of dollars per month. Large raster sets can cost more, but it's a fraction of the price of running a server. You can also turn on requester-pays, and Source Cooperative will host open government data for free.",
   "A Portolan implementation doesn't depend on any foreign vendor for geospatial software since there are no servers and everything is open source. The key point is that even the cloud storage layer can be fully sovereign. Cloud-native doesn't mean big cloud — this architecture just needs S3-compatible storage, and there are now many European providers.",
-  "Portolan is an open-source, community-governed project — no single organization controls it. We are looking for early adopters who want to help prove the model. The Netherlands is the ideal place to do this. You have strong open data culture, technical capacity, and geospatial ambition. A Dutch government Portolan implementation would be the first real proof point — and a model for SDIs across Europe. We'd love to work with you."
+  "Portolan is an open-source, community-governed project — no single organization controls it. We are looking for early adopters who want to help prove the model. The Netherlands is the ideal place to do this. You have strong open data culture, technical capacity, and geospatial ambition. A Dutch government Portolan implementation would be the first real proof point — and a model for SDIs across Europe. We'd love to work with you.",
+  ""
 ]
 </script>
 
@@ -1777,6 +1778,16 @@
         <div class="cta-url">github.com/portolan-sdi</div>
       </div>
     </div>
+  </section>
+
+  <!-- CLOSING: Index page with overlay -->
+  <section data-label="30 Explore" style="background:#000; padding:0; position:relative;">
+    <iframe src="index.html" style="width:100%; height:100%; border:none;"></iframe>
+    <div style="position:absolute; bottom:60px; left:50%; transform:translateX(-50%); background:oklch(16% 0.04 240 / 0.92); border:1px solid oklch(75% 0.16 75 / 0.4); border-radius:16px; padding:28px 48px; text-align:center; backdrop-filter:blur(12px);">
+      <div style="font-family:'DM Sans',system-ui,sans-serif; font-size:36px; font-weight:600; color:oklch(93% 0.008 240); letter-spacing:-0.01em;">Get the talk and explore the demos at</div>
+      <div style="font-family:'DM Mono','Courier New',monospace; font-size:32px; font-weight:500; color:oklch(75% 0.16 75); margin-top:12px;">cholmes.github.io/open-geodag-presentation</div>
+    </div>
+    <button class="slide-nav-arrow slide-nav-prev" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index - 1, 'click')">&#8249;</button>
   </section>
 
 </deck-stage>
