@@ -1676,9 +1676,9 @@
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">All registrations + AHN + luchtfoto</td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~80 TB</td>
             <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 519</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~200 TB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 200</td>
-            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 720</td>
+            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~5 PB</td>
+            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 5,000</td>
+            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 5,520</td>
           </tr>
           <tr style="background:oklch(75% 0.16 75 / 0.08);">
             <td colspan="6" style="font-size:var(--t-label); color:oklch(65% 0.02 240); border-bottom:none;">Source Cooperative: free hosting for open government data</td>
@@ -1709,18 +1709,38 @@
       </div>
       <div class="slide-body" style="justify-content:center;">
         <div class="cols-2" style="gap:80px; align-items:center;">
-          <div class="format-split-bullets" style="gap:32px;">
-            <div class="format-split-bullet">No foreign vendor in the stack — 100% open source, no servers.</div>
-            <div class="format-split-bullet">Cloud-native just needs S3-compatible storage — many European providers qualify.</div>
+          <div style="display:flex; flex-direction:column; gap:40px;">
+            <div style="display:flex; align-items:center; gap:24px;">
+              <img src="uploads/eu-flag.svg" alt="EU flag" style="width:80px; height:54px; border-radius:4px;">
+              <div style="font-size:28px; font-weight:300; color:oklch(70% 0.015 240); line-height:1.4;">European digital<br>sovereignty</div>
+            </div>
+            <div class="format-split-bullets" style="gap:32px;">
+              <div class="format-split-bullet">No foreign vendor in the stack — 100% open source, no servers.</div>
+              <div class="format-split-bullet">Cloud-native just needs S3-compatible storage — many European providers qualify.</div>
+            </div>
           </div>
           <div style="display:flex; flex-direction:column; align-items:center; gap:28px;">
-            <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:center; max-width:480px;">
-              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">Hetzner <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">🇩🇪</span></div>
-              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">Scaleway <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">🇫🇷</span></div>
-              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">OVHcloud <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">🇫🇷</span></div>
-              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">IONOS <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">🇩🇪</span></div>
-              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">Cloudflare R2</div>
-              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:10px; padding:14px 24px; font-size:24px; font-weight:600; color:var(--white);">MinIO <span style="font-size:16px; font-weight:400; color:oklch(60% 0.02 240); margin-left:4px;">self-hosted</span></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; width:100%; max-width:520px;">
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:14px;">
+                <img src="uploads/logo-hetzner.svg" alt="Hetzner" style="width:32px; height:32px; filter:invert(1);">
+                <div><div style="font-size:24px; font-weight:600; color:var(--white);">Hetzner</div><div style="font-size:14px; color:oklch(55% 0.02 240);">Germany 🇩🇪</div></div>
+              </div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:14px;">
+                <img src="uploads/logo-scaleway.svg" alt="Scaleway" style="width:32px; height:32px; filter:invert(1);">
+                <div><div style="font-size:24px; font-weight:600; color:var(--white);">Scaleway</div><div style="font-size:14px; color:oklch(55% 0.02 240);">France 🇫🇷</div></div>
+              </div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:14px;">
+                <img src="uploads/logo-ovhcloud.svg" alt="OVHcloud" style="width:32px; height:32px; filter:invert(1);">
+                <div><div style="font-size:24px; font-weight:600; color:var(--white);">OVHcloud</div><div style="font-size:14px; color:oklch(55% 0.02 240);">France 🇫🇷</div></div>
+              </div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:14px;">
+                <img src="uploads/logo-ionos.svg" alt="IONOS" style="width:32px; height:32px; filter:invert(1);">
+                <div><div style="font-size:24px; font-weight:600; color:var(--white);">IONOS</div><div style="font-size:14px; color:oklch(55% 0.02 240);">Germany 🇩🇪</div></div>
+              </div>
+              <div style="background:oklch(100% 0 0 / 0.08); border:1px solid oklch(100% 0 0 / 0.12); border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:14px; grid-column:1 / -1; justify-self:center; width:fit-content; padding-left:40px; padding-right:40px;">
+                <img src="uploads/logo-minio.svg" alt="MinIO" style="width:32px; height:32px; filter:invert(1);">
+                <div><div style="font-size:24px; font-weight:600; color:var(--white);">MinIO</div><div style="font-size:14px; color:oklch(55% 0.02 240);">Self-hosted, anywhere</div></div>
+              </div>
             </div>
             <div style="font-size:20px; color:oklch(50% 0.02 240); font-style:italic;">Any S3-compatible storage</div>
           </div>

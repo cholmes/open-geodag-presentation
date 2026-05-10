@@ -110,20 +110,70 @@
     line-height: 1.5;
   }
 
-  .demos-heading {
+  .featured {
+    margin-top: 48px;
+    margin-bottom: 40px;
+  }
+
+  .featured a {
+    display: block;
+    background: linear-gradient(135deg, oklch(25% 0.06 240), oklch(20% 0.05 240));
+    border: 2px solid oklch(75% 0.16 75 / 0.4);
+    border-radius: 14px;
+    padding: 36px 40px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  }
+
+  .featured a:hover {
+    border-color: oklch(75% 0.16 75 / 0.8);
+    box-shadow: 0 0 40px oklch(75% 0.16 75 / 0.12);
+  }
+
+  .featured-eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: oklch(75% 0.16 75);
+    margin-bottom: 12px;
+  }
+
+  .featured-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .featured-desc {
     font-size: 16px;
+    color: oklch(70% 0.015 240);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .featured-cta {
+    font-size: 14px;
+    font-weight: 600;
+    color: oklch(75% 0.16 75);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .demos-heading {
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: oklch(75% 0.16 75);
-    margin-top: 48px;
-    margin-bottom: 16px;
+    color: oklch(55% 0.02 240);
+    margin-bottom: 14px;
   }
 
   .demo-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .demo-link {
@@ -131,7 +181,7 @@
     background: oklch(22% 0.05 240);
     border: 1px solid oklch(100% 0 0 / 0.08);
     border-radius: 10px;
-    padding: 20px 24px;
+    padding: 18px 24px;
     text-decoration: none;
     color: inherit;
     transition: border-color 0.2s, background 0.2s;
@@ -143,28 +193,28 @@
   }
 
   .demo-title {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
 
   .demo-desc {
-    font-size: 14px;
+    font-size: 13px;
     color: oklch(60% 0.02 240);
     line-height: 1.5;
   }
 
   .demo-badge {
     display: inline-block;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: oklch(16% 0.04 240);
     background: oklch(75% 0.16 75);
     border-radius: 4px;
-    padding: 2px 8px;
-    margin-left: 10px;
+    padding: 2px 7px;
+    margin-left: 8px;
     vertical-align: middle;
   }
 
@@ -206,23 +256,27 @@
       <div class="link-desc">Speaker notes, slide preview, and navigation controls.</div>
     </a>
   </div>
-  <div class="demos-heading">Interactive Demos</div>
+  <div class="featured">
+    <a href="https://portolan-sdi.github.io/portolan-nl-demo/">
+      <div class="featured-eyebrow">Explore the demo</div>
+      <div class="featured-title">Portolan NL — Dutch SDI Prototype</div>
+      <div class="featured-desc">A live, serverless data portal for the Netherlands built entirely on cloud-native formats. Browse Dutch government datasets with interactive maps, tables, and multiple visualization styles — all powered by static files on object storage, with zero servers.</div>
+      <div class="featured-cta">portolan-sdi.github.io/portolan-nl-demo &rarr;</div>
+    </a>
+  </div>
+  <div class="demos-heading">AI-Generated Analysis Demos</div>
   <div class="demo-list">
     <a href="parks_buildings.html" class="demo-link">
       <div class="demo-title">Buildings in Dutch National Parks <span class="demo-badge">AI-generated</span></div>
-      <div class="demo-desc">Interactive dashboard with MapLibre map and Chart.js visualizations — BAG buildings spatially joined with national park boundaries.</div>
+      <div class="demo-desc">BAG buildings spatially joined with national park boundaries — MapLibre map and Chart.js visualizations.</div>
     </a>
     <a href="monuments.html" class="demo-link">
       <div class="demo-title">Monuments in Dutch National Parks <span class="demo-badge">AI-generated</span></div>
-      <div class="demo-desc">Heritage analysis of Rijksmonumenten within national parks — spatial joins, construction era charts, and interactive map with monument footprints.</div>
+      <div class="demo-desc">Rijksmonumenten heritage analysis — spatial joins, construction era charts, and interactive map with monument footprints.</div>
     </a>
     <a href="tulip_fields_netherlands.html" class="demo-link">
       <div class="demo-title">Tulip Fields of the Netherlands <span class="demo-badge">AI-generated</span></div>
-      <div class="demo-desc">Crop analysis from BRP 2025 data — tulip field distribution, interactive graphs, and per-province statistics from Portolan SDI.</div>
-    </a>
-    <a href="https://portolan-sdi.github.io/portolan-nl-demo/" class="demo-link">
-      <div class="demo-title">Portolan NL Demo</div>
-      <div class="demo-desc">Live Portolan data portal for the Netherlands — browse Dutch government datasets in cloud-native formats with interactive maps and tables.</div>
+      <div class="demo-desc">Crop analysis from BRP 2025 data — tulip distribution, interactive graphs, and per-province statistics.</div>
     </a>
   </div>
 
