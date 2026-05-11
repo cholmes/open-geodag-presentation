@@ -1633,8 +1633,18 @@
         </div>
         <div class="slide-title">The Cost Picture</div>
       </div>
-      <div class="slide-body" style="justify-content:center;">
-      <table style="color:var(--offwhite);">
+      <div class="slide-body" style="justify-content:center; position:relative;" id="cost-calc">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+        <div id="cc-provider-bar" style="display:none; gap:8px; align-items:center;">
+          <span style="font-size:20px; color:oklch(60% 0.02 240); margin-right:8px;">Provider:</span>
+          <button onclick="ccSetProvider('leaseweb')" class="cc-prov-btn" data-p="leaseweb" style="background:oklch(75% 0.16 75); color:oklch(14% 0.02 240); border:none; border-radius:6px; padding:8px 20px; font-size:20px; font-weight:600; font-family:var(--font-sans); cursor:pointer;">Leaseweb</button>
+          <button onclick="ccSetProvider('hetzner')" class="cc-prov-btn" data-p="hetzner" style="background:oklch(100% 0 0 / 0.08); color:var(--offwhite); border:1px solid oklch(100% 0 0 / 0.15); border-radius:6px; padding:8px 20px; font-size:20px; font-weight:600; font-family:var(--font-sans); cursor:pointer;">Hetzner</button>
+          <button onclick="ccSetProvider('aws')" class="cc-prov-btn" data-p="aws" style="background:oklch(100% 0 0 / 0.08); color:var(--offwhite); border:1px solid oklch(100% 0 0 / 0.15); border-radius:6px; padding:8px 20px; font-size:20px; font-weight:600; font-family:var(--font-sans); cursor:pointer;">AWS S3</button>
+        </div>
+        <div style="flex:1;"></div>
+        <button id="cc-edit-btn" onclick="ccToggleEdit()" style="background:none; border:1px solid oklch(75% 0.16 75 / 0.5); color:oklch(75% 0.16 75); border-radius:6px; padding:6px 18px; font-size:18px; font-weight:500; font-family:var(--font-sans); cursor:pointer; letter-spacing:0.05em;">Edit</button>
+      </div>
+      <table style="color:var(--offwhite);" id="cc-table">
         <thead>
           <tr>
             <th style="color:oklch(60% 0.02 240); border-bottom-color:oklch(100% 0 0 / 0.12);">Scenario</th>
@@ -1647,32 +1657,32 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr data-row="0">
             <td style="color:var(--offwhite); border-bottom-color:oklch(100% 0 0 / 0.07);"><strong>Municipality</strong></td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">Vector (BAG, BGT, zoning)</td>
-            <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~2 GB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 9</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~200 GB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 0.44</td>
-            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 9</td>
+            <td class="cc-size" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-stor" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="cc-xfer" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-egr" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-tot" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
           </tr>
-          <tr>
+          <tr data-row="1">
             <td style="color:var(--offwhite); border-bottom-color:oklch(100% 0 0 / 0.07);"><strong>Province</strong></td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">Vector + orthophoto</td>
-            <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~3 TB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 51</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~30 TB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 66</td>
-            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 117</td>
+            <td class="cc-size" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-stor" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="cc-xfer" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-egr" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-tot" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
           </tr>
-          <tr>
+          <tr data-row="2">
             <td style="color:var(--offwhite); border-bottom-color:oklch(100% 0 0 / 0.07);"><strong>National (PDOK-scale)</strong></td>
             <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">All registrations + AHN + luchtfoto</td>
-            <td style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~80 TB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 1,360</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">~5 PB</td>
-            <td class="num" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);">€ 11,000</td>
-            <td class="num" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);">~€ 12,360</td>
+            <td class="cc-size" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-stor" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="cc-xfer" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-egr" style="color:oklch(75% 0.01 240); border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
+            <td class="num cc-tot" style="color:var(--gold); font-weight:600; border-bottom-color:oklch(100% 0 0 / 0.07);"></td>
           </tr>
           <tr style="background:oklch(75% 0.16 75 / 0.08);">
             <td colspan="6" style="font-size:var(--t-label); color:oklch(65% 0.02 240); border-bottom:none;">Source Cooperative: free hosting for open government data</td>
@@ -1680,11 +1690,140 @@
           </tr>
         </tbody>
       </table>
-        <div style="margin-top:24px; font-size:18px; color:oklch(45% 0.02 240); line-height:1.8;">
-          Priced on Leaseweb Object Storage (Dutch, S3-compatible): €0.017/GB/mo storage · €0.0022/GB egress<br>
-          National estimate: AHN ~25 TB, luchtfoto ~40 TB, vector registrations ~500 GB, overhead ~15 TB · No server compute, licensing, or staffing costs
-        </div>
+        <div id="cc-footnote" style="margin-top:24px; font-size:18px; color:oklch(45% 0.02 240); line-height:1.8;"></div>
       </div>
+      <script>
+      (function(){
+        const providers = {
+          leaseweb: {
+            label: 'Leaseweb Object Storage (Dutch, S3-compatible)',
+            storPerGB: 0.017, egrPerGB: 0.0022,
+            baseMonthly: 0, inclStorGB: 0, inclEgrGB: 0,
+            detail: '€0.017/GB/mo storage · €0.0022/GB egress'
+          },
+          hetzner: {
+            label: 'Hetzner Object Storage (German/EU, S3-compatible)',
+            storPerGB: 0.005, egrPerGB: 0.001,
+            baseMonthly: 6.49, inclStorGB: 1024, inclEgrGB: 1024,
+            detail: '€6.49/mo base (1 TB storage + 1 TB egress incl.) · €0.005/GB overage storage · €0.001/GB overage egress'
+          },
+          aws: {
+            label: 'AWS S3 eu-west-1',
+            storPerGB: 0.023, egrPerGB: 0.09,
+            baseMonthly: 0, inclStorGB: 0, inclEgrGB: 0,
+            detail: '$0.023/GB/mo storage · $0.09/GB egress (first 10 TB tier) — prices in USD'
+          }
+        };
+
+        const rows = [
+          { sizeGB: 2, xferGB: 200 },
+          { sizeGB: 3072, xferGB: 10240 },
+          { sizeGB: 81920, xferGB: 2097152 }
+        ];
+
+        let curProvider = 'leaseweb';
+        let editing = false;
+
+        function toGB(val, unit) {
+          if (unit === 'PB') return val * 1024 * 1024;
+          if (unit === 'TB') return val * 1024;
+          return val;
+        }
+
+        function fmtSize(gb) {
+          if (gb >= 1024 * 1024) return (gb / (1024*1024)).toFixed(gb % (1024*1024) === 0 ? 0 : 1) + ' PB';
+          if (gb >= 1024) return (gb / 1024).toFixed(gb % 1024 === 0 ? 0 : 1) + ' TB';
+          return gb + ' GB';
+        }
+
+        function fmtEur(v) {
+          if (v >= 1000) return '€ ' + v.toLocaleString('en', {maximumFractionDigits:0});
+          if (v >= 10) return '€ ' + v.toFixed(0);
+          if (v >= 1) return '€ ' + v.toFixed(1);
+          return '€ ' + v.toFixed(2);
+        }
+
+        function calc(sizeGB, xferGB, p) {
+          let stor = p.baseMonthly + Math.max(0, sizeGB - p.inclStorGB) * p.storPerGB;
+          let egr = Math.max(0, xferGB - p.inclEgrGB) * p.egrPerGB;
+          return { stor, egr, total: stor + egr };
+        }
+
+        function render() {
+          const p = providers[curProvider];
+          document.querySelectorAll('.cc-prov-btn').forEach(b => {
+            const active = b.dataset.p === curProvider;
+            b.style.background = active ? 'oklch(75% 0.16 75)' : 'oklch(100% 0 0 / 0.08)';
+            b.style.color = active ? 'oklch(14% 0.02 240)' : 'oklch(93% 0.008 240)';
+            b.style.border = active ? 'none' : '1px solid oklch(100% 0 0 / 0.15)';
+          });
+          const trs = document.querySelectorAll('#cc-table tr[data-row]');
+          trs.forEach((tr, i) => {
+            const r = rows[i];
+            const c = calc(r.sizeGB, r.xferGB, p);
+            const sizeCell = tr.querySelector('.cc-size');
+            const xferCell = tr.querySelector('.cc-xfer');
+            if (editing) {
+              if (!sizeCell.querySelector('input')) {
+                sizeCell.innerHTML = '<input class="cc-inp" data-row="'+i+'" data-field="size" value="'+fmtSize(r.sizeGB)+'">';
+                xferCell.innerHTML = '<input class="cc-inp" data-row="'+i+'" data-field="xfer" value="'+fmtSize(r.xferGB)+'">';
+                sizeCell.querySelectorAll('.cc-inp').forEach(attachInput);
+                xferCell.querySelectorAll('.cc-inp').forEach(attachInput);
+              }
+            } else {
+              sizeCell.textContent = '~' + fmtSize(r.sizeGB);
+              xferCell.textContent = '~' + fmtSize(r.xferGB);
+            }
+            tr.querySelector('.cc-stor').textContent = fmtEur(c.stor);
+            tr.querySelector('.cc-egr').textContent = fmtEur(c.egr);
+            tr.querySelector('.cc-tot').textContent = '~' + fmtEur(c.total);
+          });
+          const cur = curProvider === 'aws' ? '$' : '€';
+          document.getElementById('cc-footnote').innerHTML =
+            'Priced on ' + p.label + ': ' + p.detail + '<br>' +
+            'National estimate: AHN ~25 TB, luchtfoto ~40 TB, vector registrations ~500 GB, overhead ~15 TB · No server compute, licensing, or staffing costs';
+        }
+
+        function parseSize(str) {
+          str = str.replace(/[~,]/g, '').trim();
+          const m = str.match(/^([\d.]+)\s*(PB|TB|GB)?$/i);
+          if (!m) return null;
+          const val = parseFloat(m[1]);
+          const unit = (m[2] || 'GB').toUpperCase();
+          return toGB(val, unit);
+        }
+
+        function attachInput(inp) {
+          inp.addEventListener('change', function() {
+            const ri = parseInt(this.dataset.row);
+            const gb = parseSize(this.value);
+            if (gb === null || gb <= 0) { this.value = fmtSize(rows[ri][this.dataset.field === 'size' ? 'sizeGB' : 'xferGB']); return; }
+            if (this.dataset.field === 'size') rows[ri].sizeGB = gb;
+            else rows[ri].xferGB = gb;
+            this.value = fmtSize(gb);
+            render();
+          });
+        }
+
+        window.ccSetProvider = function(k) { curProvider = k; render(); };
+        window.ccToggleEdit = function() {
+          editing = !editing;
+          const bar = document.getElementById('cc-provider-bar');
+          const btn = document.getElementById('cc-edit-btn');
+          bar.style.display = editing ? 'flex' : 'none';
+          btn.textContent = editing ? 'Done' : 'Edit';
+          btn.style.background = editing ? 'oklch(75% 0.16 75)' : 'none';
+          btn.style.color = editing ? 'oklch(14% 0.02 240)' : 'oklch(75% 0.16 75)';
+          render();
+        };
+
+        const style = document.createElement('style');
+        style.textContent = '.cc-inp{background:none;border:none;border-bottom:2px solid oklch(75% 0.16 75 / 0.5);color:oklch(75% 0.01 240);font-family:var(--font-mono);font-size:var(--t-small);font-weight:500;width:120px;padding:2px 0;text-align:right;outline:none;}.cc-inp:focus{border-bottom-color:oklch(75% 0.16 75);}';
+        document.head.appendChild(style);
+
+        render();
+      })();
+      </script>
     </div>
   </section>
 
