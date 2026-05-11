@@ -11,12 +11,12 @@
 
 <script type="application/json" id="speaker-notes">
 [
-  "Thank you so much for inviting me to share my thoughts on the future of geospatial data infrastructure. I've known Rob for many years from my time on the OGC board, and I moved to the Netherlands about nine months ago, living in Amsterdam and working in Haarlem. It's been awesome living here, and I've long been a fan of Geonovum, so it's a real pleasure to be here with you all.",
+  "Thank you so much for inviting me to share my thoughts on the future of geospatial data infrastructure. I've known Rob for many years from my time on the OGC board, and I see several familiar faces from the various open communities I work in. I moved to the Netherlands about nine months ago, living in Amsterdam and working in Haarlem. It's been awesome living here, and I've long been a fan of Geonovum, so it's a real pleasure to be here with you all. As you'll see, preparing for this talk gave me an opportunity to dig much deeper into the Dutch National SDI and I've been incredibly impressed by what you all have built.",
   "I work for Planet, a satellite company that images the entire earth every single day. It's a great company, and if you've not heard of it you should check it out. But today I'm going to talk about a topic I've been working towards for my entire career. ",
   "I got my start as the first lead developer of GeoServer, almost 25 years ago. I did the early code for it to serve as reference implementation of the Web Feature Service specification, and always appreciated that we were working to make geospatial data truly available for analysis, not just sharing maps. ",
-  "And I was deeply involved in the early implementations of INSPIRE. We spent a lot of time trying to improve GeoServer to map from databases to the interoperable application schemas. I loved the vision of INSPIRE, and really admired that Europe invested so much to make it happen. But I don't think the infrastructure ever really delivered on its promise.",
+  "And I was deeply involved in the early implementations of INSPIRE. We spent a lot of time trying to improve GeoServer to map from databases to the interoperable application schemas. I loved the vision of INSPIRE, and really admired that Europe invested so much to make it happen. But I don't think the infrastructure ever really delivered on its promise. There are a lot of great national SDI's, but there's still a lot of friction to get data, and even more to publish it.",
   "The vision that animated INSPIRE was genuinely compelling. A federated European spatial data infrastructure — discoverable, interoperable, openly accessible to all. But I believe that a 'better' SDI from what we have today is possible. I see five different ways we could 'upgrade'.",
-  "Let's start with the most interesting one first. Our infrastructure was not built with AI or agents in mind. But it's fast becoming the way many people interact with the world. The current SDI software is mostly slow API's and javascript portals. This isn't the way AI wants to interact with the data. What AI wants is to just get the full data as quickly as possible, along with as much useful metadata about what the data represents. So we need to rebuild our SDI's with AI as a first-class citizen, as it can make spatial data much more accessible and useful to a much wider number of people.",
+  "Let's start with the most interesting one first. Our infrastructure was not built with AI or agents in mind. But it's fast becoming the way many people interact with the world. The current SDI software is mostly slow API's and javascript portals. This isn't the way AI wants to interact with the data. What AI wants is to just get the full data as quickly as possible, along with as much useful metadata about what the data represents. So we need to upgrade our SDI's so AI is a first-class citizen, as it can make spatial data much more accessible and useful to a much wider number of people.",
   "The second requirement is ease of implementation. Getting data into a compliant SDI today is a serious undertaking. You need to convert data to the right schemas, stand up WMS and WFS services, manage databases, keep services running. That requires database administrators, web service experts, and staff on call. There's been a vision that any government agency, even a small town, could be part of the SDI. Today that's not realistic, but I believe we can drastically lower the barrier for non-experts to share their data.",
   "The rise of AI means that services must support agents as well as humans. And AI agents don't just query an API once — they make many requests in order to suck down entire datasets. In the current paradigm, that means spinning up more servers and more clusters just to stay available to the public. Your SDI can become a victim of its own success. The ideal infrastructure should handle any amount of traffic without breaking a sweat.",
   "That scalability can't come at a massive price. Sharing data publicly is a public good — it shouldn't be an organizational burden. Storage costs, server costs, staff costs — they add up fast. And if a dataset becomes very popular it shouldn't cause a budget shortfall.",
@@ -30,42 +30,42 @@
   "PMTiles is the visualization complement — where GeoParquet and COG handle analysis, PMTiles handles display. It packages map tiles into a single file that clients read directly from storage. No tile server needed.",
   "STAC is the metadata layer that ties everything together. It's simple JSON that describes any cloud-native geospatial asset — a COG, a GeoParquet file, a point cloud. You can search STAC collections through an OGC Features API, or go fully serverless with STAC-GeoParquet, which puts the entire catalog into a queryable file on object storage.",
   "So we have these powerful formats. They've mostly been used independently — COG for better raster distribution, STAC for satellite imagery catalogs. But what if we brought them all together into a coherent architecture for SDI?",
-  "We decided to go beyond just a thought experiment, leveraging claude to build a complete set of tools to prove out this concept. This idea is quite centered in the Netherlands, with a collaborator named Nissim who is based in The Hague leading the charge. I'm going to share some super early demos of what we've built, and then conclude with the ways that this approach can build a better SDI.",
-  "This is the landing page. I'll share the URL so you all can play with it later.",
+  "We decided to go beyond just a thought experiment, leveraging Claude Code and Cowork to build a complete set of tools to prove out this concept. This idea is quite centered in the Netherlands, with a collaborator named Nissim who is based in The Hague leading the charge. And a key enabling technology is a powerful, lightweight database called DuckDB which is backed by a company in Amsterdam. I'm going to share some super early demos of what we've built, and then conclude with the ways that this approach can build a better SDI.",
+  "This is the landing page. If you want to check it out while I talk you can snap this QR code and go to the site.",
   "It's similar to other data portals, you can see all the different data providers and layers to explore. Before I dive deep into it I want to say that the reason we were able to pull this together so quickly is due to all the deep, hard work that you all have done to make data available and document it all. You'll see a lot of familiar things throughout, as I liberally borrowed from all the great work that makes up the Dutch SDI today. The key thing that I did was translate all the data into the cloud native formats, which in turn enable a high degree of interactivity on the web. There are zero servers powering anything that you're seeing, it's all done with these cloud native formats. You can explore datasets directly in context, with default styles that are part of the infrastructure and easily reusable by others. For this demo I just sucked down a subset of all the data on PDOK, but I tried to get a decently representative sample.",
-  "I apologize that I did most of it in English - it is a goal of mine to learn Dutch, but it's been a busy time since I arrived. Everything should work just as well in Dutch. We made it so you can easily not just interact with the map, but also see the non-spatial properties in an interactive table. For now I've just limited it to smaller subsets of the data, but a full-fledged environment to interact with the entire dataset is possible. I believe it's important to easily get a sense of the data without having to talk to an API or download the full thing. And I've hooked it up so you can jump from the rows to the map (though it's not actually working perfectly).",
-  "And you can interact with large datasets, all without servers. This is 11 million buildings, all stored as a single PMTiles on cloud storage. You can zoom in anywhere and see the full resolution data, even visualizing it with different styles. This is just a naive PMTiles translation - there are more advanced techniques to provider nicer overviews, as you can see it looks a bit weird when you're zoomed out. But I'd much prefer to have some indicator of where data is, even if it's a bit off. Making even better defaults is one of the areas we'll be exploring more.",
-  "This shows off how you can visualize cloud-native data with different styles. This is one of the things we're pioneering, to have style files as part of the STAC entry. For those with lots of OGC experience this was the SLD spec hoped to do, but it hasn't updated for the modern geospatial world. This is using a mapbox style, but it's emerged as a de facto standard, with OpenLayers and MapLibre both supporting it.",
+  "I apologize that I did most of it in English - it is a goal of mine to learn Dutch, but it's been a busy time since I arrived. Everything should work just as well in Dutch. So this is showing that the cloud-native interactivity is not just with the map - it also works with non-spatial properties, enabling you to view and filter attributes directly online. For now I've just limited it to smaller subsets of the data, but a full-fledged environment to interact with the entire dataset is possible. I believe it's important to easily get a sense of the data without having to talk to an API or download the full thing.",
+  "And you can interact with large datasets, all without servers. This is 11 million buildings, all stored as a single PMTiles on cloud storage. You can zoom in anywhere and see the full resolution data, and change the styling of the data dynamically. This is just a naive PMTiles translation - there are more advanced techniques to provider nicer overviews, as you can see it looks a bit weird when you're zoomed out. But I'd much prefer to have some indicator of where data is, even if it's a bit off. Making even better defaults is one of the areas we'll be exploring more.",
+  "This shows off how you can visualize cloud-native data with different styles. This is one of the things we're pioneering, to have style files as part of the STAC entry. For those with lots of OGC experience this was what the SLD spec hoped to do, but it hasn't updated for the modern geospatial world. This is using a mapbox style, but it's emerged as a de facto standard, with OpenLayers and MapLibre both supporting it.",
   "You can see what one looks like, it's just a bunch of json.",
   "The key is that we provide it as an artifact that's linked to and available for anyone.",
   "We can also handle raster imagery, using COG's or Zarr. I downloaded a bunch of aerial imagery and reprocessed it to be more cloud native. So you can navigate down to what you want, zoom in to full resolution, and download it. One thing I like is that everything is bookmarkable and shareable - everything has its own resource online.",
   "You can also use a more map-first interface like STAC map. And there's lots of other tools that support STAC, so if you put data in portolan then many other tools will be able to understand it. A map first interface like this makes it easier to navigate to where you want, like an aerial photo of where we are today.",
   "So I want to show a bit of what's under the hood. You can view the source of any page, and changing anything is just editing these files. All the interactivity of the maps is due to the cloud native formats. A key thing with this is that this particular view is just one possible way to view the same data. So this text file has all the information and links, and can be used by many different tools.",
-  "I made custom styling of the portolan viewer for this demo. You can see our generic browser, where you can point at any portolan catalog. And then you can also see it in STAC Browser, which is a more generic tool, but works great with this, since it's all STAC.",
+  "This separation of data from presentation makes it easy to change how the web interactions look. I did some customization of the portolan viewer for this demo. You can see our generic browser, which has a different color scheme, and it gives a list of catalgos and let's you can point at any portolan catalog. And then you can also see it in STAC Browser, which is a more generic tool, but works great with this, since it's all STAC. It's easy to make use of STAC Browser and then customize it for your own look and feel.",
   "So all of this works by directly putting data on an object store like amazon s3. But I used a nicer tool built on top of aws, called source cooperative. It's the main project of Radiant Earth, who started STAC and run the Cloud Native Geospatial forum. Think of it like GitHub for data. I love it because it's free hosting for any open data, they've got about 5 petabytes up there, so the 50 gigabytes I put up for this are nothing.",
   "For Portolan we made readme's for everything, so that you can easily use the source coop interface and understand what's on it. And then you also will see my latest experiment, with the llms.txt to communicate directly with AI agents. The cloud native formats are ideal for agents to work with, so my hypothesis has been that if we just point the agents in the right direction with cloud native geospatial that it will do incredible things.",
   "I tested this hypothesis last week, and the results were quite compelling. I started with this prompt, to just explore the buildings data.",
   "The weird start of the prompt is using a 'skill'. Setting this up is a bit specialized, but I am optimistic that within a few months the special prompt won't be needed. But what this prompt relies on is the reading-portolan 'skill'. I used the web version, so I had to upload it, but you can also easily install it in other environments.",
   "And it started plugging away. Installing various dependencies and querying the data to understand it. The skill tells it what tools it needs to make sense of cloud native geospatial data.",
-  "It didn't manage to make any visualizations, but it gave a ton of interesting insight into the dataset. It's a gigabyte of data, but it can all be queryed directly by Claude using DuckDB, since it can stream GeoParquet data. Claude inspected the data and made sense of the columns and then ran a bunch of analysis. It pulled out insights on permitting / construction, buliding use - that 50% are residential and 10% commercial, timelines, including finding a dip in construction with world war II, largest buildings - guessing that the top ones were huge greenhouse complexes treated as single buildings, average footprint by building function, and more.",
+  "It didn't manage to make any visualizations, but it gave a ton of interesting insight into the dataset. It's a gigabyte of data, but it can all be queryed directly by Claude using DuckDB, since it can stream GeoParquet data. Claude inspected the data and made sense of the columns and then ran a bunch of analysis. It pulled out insights on permitting / construction, buliding use - that 50% are residential and 10% commercial, timelines, including finding a dip in construction with world war II, largest buildings - guessing that the top ones were huge greenhouse complexes treated as single buildings, average footprint by building function, and more. It also ended with some compliments on the dataset and how it was formatted, which I appreciated.",
   "So then I decided to see if it could do some spatial analysis, with buildings and national parks.",
   "This time I encouraged it to make me visualizations and maps. It chugged along for awhile, sharing insights along the way as it explored, and this time it spit out a html file for me to load up.",
   "The results were pretty awesome. What I'm showing now is the complete results, embedded into this presentation. It gave some nice summary stats about parks and the number of buildings inside, and some nice charts to visualize the data. And the live map is pretty awesome (select a few from the drop down, then click on the top one on 'the full ranking'). It did a nice job styling the PMTiles, and it lets you control the layer nicely, with nice interactivity.",
   "So I decided to have it take another go, this time taking the monuments dataset that's just points and doing some spatial joins with the buildings, but keeping with the national park theme. You can see its dialog with me as it ran through things. I will note these weren't 'instant' results, more go get a coffee and come back and see what happened. It's doing deep spatial analysis with many queries to multiple datasets, and surfacing interesting insights.",
-  "And again it came up with something really compelling. It pulled out a bunch of interesting higher level statistics, like average construction year and oldest match. It explained the results of the joining, that archeology doesn't match buildings. I thought the construction era graph was interesting, and made sense that it's the older buildings that are monuments, then info on the largest and oldest ones. And then it made a compelling map, with all three layers. Note that I only did the most minimal of iterations on these, it was mostly a 'one-shot' where it got compelling results without having to keep telling it what to do. But of course you could continue to customize it to do all kinds of cool stuff.",
+  "And again it came up with something really compelling. It pulled out a bunch of interesting higher level statistics, like average construction year and oldest match. It explained the results of the joining, that archeology doesn't match buildings. I thought the construction era graph was interesting, and made sense that it's the older buildings that are monuments, then info on the largest and oldest ones. And then it made a compelling map, with all three layers. Note that I only did the most minimal of iterations on these, it was mostly what developers call a 'one-shot' where it got compelling results without having to keep telling it what to do. But of course you could continue to interact with Claude to customize it to do whatever you can imagine - add aerial imagery, 3d views, better map controls, or join more datasets.",
   "The core thing that enables it all is the architecture of cloud native tools plus open source software. LLM's do much, much better with code that is open, since there is so much more to train on. So making full mapping applications is much easier, this is an app I didn't even ask for as I was asking about tulips. And I think interacting with SDI's is going to shift from one or two applications to everyone just creating their own web apps to do exactly what they want.",
-  "Or even more likely is it'll shift to just directly interacting with the data through chat.",
-  "I started with a simple question about tulips, but then just started asking questions about crops in the netherlands in general. The initial results were less interesting to me with all the grasslands, so I just asked it to focus on crops. It brought up cool insights, putting it into interactive graphs, by count and by area, and higlighting some interesting facts, interpreting the data into more meaningful infomration. And since it knew about the Portolan SDI it could easily find other layers, like the provinces to do the spatial joins for per province statistics. I think this is the future of spatial data infrastructure, where it powers much more accurate results in AI by making the data fully accessible.",
-  "And I believe we're actually most of the way there. Cloud-native geospatial formats are widely adopted, and Portolan brings it all together to bridge the gap between AI and spatial data. And I believe that once we get sufficient good data in these formats that we won't even need special ai 'skills' - our SDI's will be part of the overall information infrastructure that everyone can access through AI. So let's go back to our original requirements and show how Portolan answers each one. Let me now go back to our five requirements and show how Portolan answers each one.",
-  "Portolan is built around simple text documents and command-line tools, which is exactly what AI wants to interact with. We can extract all the deep interoperability work done on INSPIRE and other harmonization efforts in to clear texts that direct AI on how to make use of the data.",
+  "Or even more likely is it'll shift to just directly interacting with the data through chat. I started with a simple question about tulips, but then just started asking questions about crops in the netherlands in general.",
+  "The initial results were less interesting to me with all the grasslands, so I just asked it to focus on crops. It brought up cool insights, putting it into interactive graphs, by count and by area, and higlighting some interesting facts, interpreting the data into more meaningful information. I had also pointed it at the root of the Portolan catalog, so it knew to look there to find other layers, and it automatically found and pulled the provinces layer for the per province statistics. I think this is the future of spatial data infrastructure, where it powers much more accurate results in AI by making the data fully accessible.",
+  "And I believe we're actually most of the way there. Cloud-native geospatial formats are widely adopted, and Portolan brings it all together to bridge the gap between AI and spatial data. And I believe that once we get sufficient good data in these formats that we won't even need special ai 'skills' - our SDI's will be part of the overall information infrastructure that everyone can access through AI. So let me now go back to our five requirements and show how Portolan answers each one.",
+  "Portolan is built around simple text documents and command-line tools, which is exactly what AI wants to interact with. When there is already a deep investment in creating great data models and documentation, like you all have done, it is easy to distill the available information in to clear texts that direct AI on how to make use of the data. The core idea is to guide AI to the right information and data, so portolan provides best practices for how to do that.",
   "AI is incredibly good at translating any natural language request into the exact query for GeoParquet, so this architecture makes vector data directly available for questions, and easy to build applications around. The core accessibility and AI-first design make it much easier to incorporate into world models, geospatial foundation models, and agentic tools.",
-  "Command-line tools and static text files are where AI tooling shines, so you can use Claude or OpenAI agents to just point at a collection of files and it will easily understand all that it can and translate into the structure of Portolan. The time I spent on getting the data ready for this site was hours, not days or weeks - I could lean on claude to do most all the tedious work. And it should get even easier, where most anyone with well formatted and documented data could publish it in hours. And the AI tools can also help formatting and documenting it.",
   "The standardized core means other tools can interact with it easily. You get a great data browser, map, and QGIS plugin for free. I believe this ecosystem will rapidly develop more capabilities so you have fully interactive tools for users with very little effort.",
-  "Since Portolan's architecture is built static files the scalability is handled by the cloud provider. This means its ability to scale is almost infinite, at tiny fractions of the costs of running clusters of ArcGIS Server or GeoServer.",
-  "There are only two costs to run a Portolan SDI — storage and egress. Storage is incredibly cheap for vector data, on the order of dollars per month. Large raster sets can cost more, but it's a fraction of the price of running a server. You can also turn on requester-pays, and Source Cooperative will host open government data for free.",
-  "A Portolan implementation doesn't depend on any foreign vendor for geospatial software since there are no servers and everything is open source. The key point is that even the cloud storage layer can be fully sovereign. Cloud-native doesn't mean big cloud — this architecture just needs S3-compatible storage, and there are now many European providers.",
-  "Portolan is an open-source, community-governed project — no single organization controls it. We are looking for early adopters who want to help prove the model. The Netherlands is the ideal place to do this. You have strong open data culture, technical capacity, and geospatial ambition. A Dutch government Portolan implementation would be the first real proof point — and a model for SDIs across Europe. We'd love to work with you.",
-  ""
+  "Command-line tools and static text files are where AI tooling shines, so you can use Claude or OpenAI agents to just point at a collection of files and it will easily understand all that it can and translate into the structure of Portolan. The time I spent on getting the data ready for this site was hours, not days or weeks - I could lean on claude to do most all the tedious work. And it should get even easier, where most anyone with well formatted and documented data could publish it in hours. And the AI tools can also help formatting and documenting it.",
+  "Since Portolan's architecture is built on static files the scalability is handled by the cloud provider. This means its ability to scale is almost infinite, at tiny fractions of the costs of running clusters of ArcGIS Server or GeoServer.",
+  "There are only two costs to run a Portolan SDI — storage and egress. Storage is incredibly cheap for vector data, on the order of dollars per month. Large raster or point cloud sets can cost more, but it's a fraction of the price of running a server. Larger providers also have a feature called 'requestor pays' where users are the ones to pay the egress costs, and Source Cooperative will host open government data for free. I have no idea what realistic data transfer estimates are. If anyone does know realistic numbers for any of these then shout it out, and I can plug it in. I made it so this can be edited. And it also has a Dutch provider, a German provider and Amazon, so you can compare sovereign options.",
+  "A Portolan implementation doesn't depend on any foreign vendor for geospatial software since there are no servers and everything is open source. The key point is that even the cloud storage layer can be fully sovereign. Cloud-native doesn't mean big cloud — this architecture just needs S3-compatible storage, and there are now many European providers. Though do note that the European providers may not quite offer the infinite scalability of AWS, but the simple architecture means they should scale quite well.",
+  "Portolan is an open-source, community-governed project — no single organization controls it. We are looking for early adopters who want to help prove the model. The Netherlands is the ideal place to do this. You have strong open data culture, technical capacity, and geospatial ambition. A Dutch government Portolan implementation would be the first real proof point — and a model for SDIs across Europe, and the world. We'd love to work with you.",
+  "I built this deck as just a set of HTML pages, so just go to the URL and you'll see this page, which links to the deck, the speaker notes, the main demo, and also the AI-generated HTML pages I showed."
 ]
 </script>
 
@@ -1297,20 +1297,34 @@
         <div class="display" style="font-size:120px; margin-bottom:32px;">Portolan</div>
         <div class="subtitle" style="max-width:780px;">A new foundation for sharing geospatial data — faster, cheaper, and built for the age of AI.</div>
       </div>
-      <div style="display:flex; align-items:flex-end; justify-content:flex-end;">
-        <div class="muted small" style="font-family:var(--font-mono); text-align:right;">portolan-sdi.github.io</div>
+      <div style="display:flex; align-items:flex-end; justify-content:flex-end; gap:20px;">
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <div style="font-size:20px; color:oklch(60% 0.02 240);">Explore the demo live</div>
+          <div class="muted small" style="font-family:var(--font-mono); text-align:right;">portolan-sdi.github.io/portolan-nl-demo</div>
+        </div>
+        <img src="uploads/qr-demo.svg" alt="QR code to demo" style="width:120px; height:120px;">
       </div>
     </div>
   </section>
 
   <!-- ⑲ DEMO: Portolan NL Landing Page -->
-  <section data-label="22 Demo" style="background:#000;padding:0;">
+  <section data-label="22 Demo" style="background:#000;padding:0;position:relative;">
     <img src="uploads/portolan-nl-landing.png" alt="Portolan NL landing page" style="width:100%;height:100%;object-fit:contain;">
+    <div style="position:absolute; bottom:24px; right:24px; display:flex; align-items:flex-end; gap:16px;">
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+        <div style="font-family:'DM Sans',system-ui,sans-serif; font-size:16px; color:oklch(60% 0.02 240);">Explore the demo live</div>
+        <div style="font-family:'DM Mono','Courier New',monospace; font-size:14px; color:oklch(75% 0.16 75);">portolan-sdi.github.io/portolan-nl-demo</div>
+      </div>
+      <img src="uploads/qr-demo.svg" alt="QR code to demo" style="width:100px; height:100px;">
+    </div>
   </section>
 
   <!-- ⑲b DEMO: Portolan browsing -->
-  <section data-label="22a Portolan Browsing" style="background:#000;padding:0;">
+  <section data-label="22a Portolan Browsing" style="background:#000;padding:0;position:relative;">
     <img src="uploads/portolan-demo1.gif" alt="Portolan NL browsing demo" style="width:100%;height:100%;object-fit:contain;">
+    <div style="position:absolute; bottom:24px; right:24px;">
+      <img src="uploads/qr-demo.svg" alt="QR code to demo" style="width:100px; height:100px; opacity:0.8;">
+    </div>
   </section>
 
   <!-- ⑲c DEMO: GeoParquet browsing -->
@@ -1520,33 +1534,8 @@
     </div>
   </section>
 
-  <!-- ㉒ EASY TO IMPLEMENT 1: Point, Convert, Push -->
-  <section class="slide-dark" data-label="26 Point, Convert, Push">
-    <div class="slide-content">
-      <div class="slide-header">
-        <div class="pill-row">
-          <div class="pill">AI-First ✓</div>
-          <div class="pill active">Easy to Implement ✓</div>
-          <div class="pill">Scalable</div>
-          <div class="pill">Low Cost</div>
-          <div class="pill">Sovereign</div>
-        </div>
-        <div class="slide-title">Point, Convert, Push</div>
-      </div>
-      <div class="slide-body" style="justify-content:center;">
-        <div class="cols-2" style="gap:80px; align-items:center;">
-          <div style="background:oklch(75% 0.16 75 / 0.12); border:1px solid oklch(75% 0.16 75 / 0.3); border-radius:10px; padding:24px 28px; font-size:22px; font-weight:400; color:var(--gold); font-style:italic; line-height:1.7;">"Claude, can you use the portolan skill to go through these data folders, extract relevant metadata, and publish a Portolan node to Source Cooperative?"</div>
-          <div class="format-split-bullets" style="gap:32px; margin-top:0; padding-top:0;">
-            <div class="format-split-bullet">Portolan tools convert shapefiles, WFS, GeoPackage, BigQuery, or ArcGIS Feature Services into cloud-native formats.</div>
-            <div class="format-split-bullet">AI tools excel at CLI + text files — non-experts can set up nodes.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ㉓ EASY TO IMPLEMENT 2: Ecosystem for Free -->
-  <section class="slide-dark2" data-label="27 Ecosystem for Free">
+  <!-- ㉒ EASY TO IMPLEMENT 1: Ecosystem for Free -->
+  <section class="slide-dark" data-label="27 Ecosystem for Free">
     <div class="slide-content">
       <div class="slide-header">
         <div class="pill-row">
@@ -1584,6 +1573,31 @@
             <text x="360" y="193" text-anchor="middle" fill="oklch(70% 0.015 240)" font-size="13" font-family="DM Sans">QGIS Plugin</text>
             <text x="210" y="250" text-anchor="middle" fill="oklch(50% 0.02 240)" font-size="12" font-style="italic" font-family="DM Sans">All generated automatically from standard formats</text>
           </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ㉓ EASY TO IMPLEMENT 2: Point, Convert, Push -->
+  <section class="slide-dark2" data-label="26 Point, Convert, Push">
+    <div class="slide-content">
+      <div class="slide-header">
+        <div class="pill-row">
+          <div class="pill">AI-First ✓</div>
+          <div class="pill active">Easy to Implement ✓</div>
+          <div class="pill">Scalable</div>
+          <div class="pill">Low Cost</div>
+          <div class="pill">Sovereign</div>
+        </div>
+        <div class="slide-title">Point, Convert, Push</div>
+      </div>
+      <div class="slide-body" style="justify-content:center;">
+        <div class="cols-2" style="gap:80px; align-items:center;">
+          <div style="background:oklch(75% 0.16 75 / 0.12); border:1px solid oklch(75% 0.16 75 / 0.3); border-radius:10px; padding:24px 28px; font-size:22px; font-weight:400; color:var(--gold); font-style:italic; line-height:1.7;">"Claude, can you use the portolan skill to go through these data folders, extract relevant metadata, and publish a Portolan node to Source Cooperative?"</div>
+          <div class="format-split-bullets" style="gap:32px; margin-top:0; padding-top:0;">
+            <div class="format-split-bullet">Portolan tools convert shapefiles, WFS, GeoPackage, BigQuery, or ArcGIS Feature Services into cloud-native formats.</div>
+            <div class="format-split-bullet">AI tools excel at CLI + text files — non-experts can set up nodes.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1634,6 +1648,9 @@
         <div class="slide-title">The Cost Picture</div>
       </div>
       <div class="slide-body" style="justify-content:center; position:relative;" id="cost-calc">
+      <p style="font-size:24px; color:oklch(75% 0.01 240); line-height:1.5; margin:0 0 20px 0; max-width:1100px;">
+        Only two costs: <strong style="color:var(--offwhite);">storage</strong> and <strong style="color:var(--offwhite);">egress</strong>. Click <em>Edit</em> to adjust estimates and compare providers.
+      </p>
       <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
         <div id="cc-provider-bar" style="display:none; gap:8px; align-items:center;">
           <span style="font-size:20px; color:oklch(60% 0.02 240); margin-right:8px;">Provider:</span>
@@ -1709,9 +1726,16 @@
           },
           aws: {
             label: 'AWS S3 eu-west-1',
-            storPerGB: 0.023, egrPerGB: 0.09,
+            storPerGB: 0.023,
+            tieredEgress: [
+              { upToGB: 100, perGB: 0 },
+              { upToGB: 10240, perGB: 0.09 },
+              { upToGB: 51200, perGB: 0.085 },
+              { upToGB: 153600, perGB: 0.07 },
+              { upToGB: Infinity, perGB: 0.05 }
+            ],
             baseMonthly: 0, inclStorGB: 0, inclEgrGB: 0,
-            detail: '$0.023/GB/mo storage · $0.09/GB egress (first 10 TB tier) — prices in USD'
+            detail: '$0.023/GB/mo storage · egress tiered: $0.09 → $0.05/GB — prices in USD'
           }
         };
 
@@ -1745,7 +1769,22 @@
 
         function calc(sizeGB, xferGB, p) {
           let stor = p.baseMonthly + Math.max(0, sizeGB - p.inclStorGB) * p.storPerGB;
-          let egr = Math.max(0, xferGB - p.inclEgrGB) * p.egrPerGB;
+          let billableGB = Math.max(0, xferGB - (p.inclEgrGB || 0));
+          let egr = 0;
+          if (p.tieredEgress) {
+            let remaining = billableGB;
+            let prev = 0;
+            for (const tier of p.tieredEgress) {
+              const tierGB = tier.upToGB - prev;
+              const used = Math.min(remaining, tierGB);
+              egr += used * tier.perGB;
+              remaining -= used;
+              prev = tier.upToGB;
+              if (remaining <= 0) break;
+            }
+          } else {
+            egr = billableGB * p.egrPerGB;
+          }
           return { stor, egr, total: stor + egr };
         }
 
@@ -1915,7 +1954,7 @@
           <div>
             <div class="subtitle" style="font-size:38px; margin-bottom:24px; font-weight:400; color:oklch(85% 0.01 240);">Be the first.</div>
             <div class="body" style="color:oklch(70% 0.015 240); line-height:1.65; font-size:30px;">
-              A Dutch government Portolan implementation would be the world's first real proof point — and a model for SDIs across Europe. You have the open data culture, the technical capacity, and the geospatial ambition to lead.
+              A Dutch government Portolan implementation would be the world's first real proof point — and a model for SDIs across Europe, and the world. You have the open data culture, the technical capacity, and the geospatial ambition to lead.
             </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:20px;">
@@ -1931,8 +1970,7 @@
         </div>
       </div>
       <div style="display:flex; gap:80px; align-items:flex-end;">
-        <div class="cta-url">portolan-sdi.github.io/portolan-cli</div>
-        <div class="cta-url">github.com/portolan-sdi</div>
+        <div class="cta-url">portolan-sdi.org</div>
       </div>
     </div>
   </section>
@@ -1940,9 +1978,12 @@
   <!-- CLOSING: Index page with overlay -->
   <section data-label="30 Explore" style="background:#000; padding:0; position:relative;">
     <iframe src="index.html" style="width:100%; height:100%; border:none;"></iframe>
-    <div style="position:absolute; bottom:60px; left:50%; transform:translateX(-50%); background:oklch(16% 0.04 240 / 0.92); border:1px solid oklch(75% 0.16 75 / 0.4); border-radius:16px; padding:28px 48px; text-align:center; backdrop-filter:blur(12px);">
-      <div style="font-family:'DM Sans',system-ui,sans-serif; font-size:36px; font-weight:600; color:oklch(93% 0.008 240); letter-spacing:-0.01em;">Get the talk and explore the demos at</div>
-      <div style="font-family:'DM Mono','Courier New',monospace; font-size:32px; font-weight:500; color:oklch(75% 0.16 75); margin-top:12px;">cholmes.github.io/open-geodag-presentation</div>
+    <div style="position:absolute; bottom:60px; left:50%; transform:translateX(-50%); background:oklch(16% 0.04 240 / 0.92); border:1px solid oklch(75% 0.16 75 / 0.4); border-radius:16px; padding:28px 48px; text-align:center; backdrop-filter:blur(12px); display:flex; align-items:center; gap:36px;">
+      <div>
+        <div style="font-family:'DM Sans',system-ui,sans-serif; font-size:36px; font-weight:600; color:oklch(93% 0.008 240); letter-spacing:-0.01em;">Get the talk and explore the demos at</div>
+        <div style="font-family:'DM Mono','Courier New',monospace; font-size:32px; font-weight:500; color:oklch(75% 0.16 75); margin-top:12px;">cholmes.github.io/open-geodag-presentation</div>
+      </div>
+      <img src="uploads/qr-presentation.svg" alt="QR code" style="width:140px; height:140px;">
     </div>
     <button class="slide-nav-arrow slide-nav-prev" onclick="document.querySelector('deck-stage')._go(document.querySelector('deck-stage')._index - 1, 'click')">&#8249;</button>
   </section>
