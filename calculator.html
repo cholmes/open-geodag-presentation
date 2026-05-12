@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud-Native SDI Cost Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   oklch(16% 0.04 240);
+    --navy2:  oklch(22% 0.05 240);
+    --gold:   oklch(75% 0.16 75);
+    --white:  oklch(97% 0.005 240);
+    --offwhite: oklch(93% 0.008 240);
+    --muted:  oklch(60% 0.02 240);
+    --text-dark: oklch(14% 0.02 240);
+    --font-sans: 'DM Sans', system-ui, sans-serif;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--navy);
+    color: var(--offwhite);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px;
+  }
+
+  .container {
+    max-width: 960px;
+    width: 100%;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 14px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 32px;
+  }
+  .back-link:hover { color: var(--gold); }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 17px;
+    font-weight: 300;
+    color: oklch(70% 0.015 240);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .provider-label {
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .prov-btn {
+    background: oklch(100% 0 0 / 0.08);
+    color: var(--offwhite);
+    border: 1px solid oklch(100% 0 0 / 0.15);
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .prov-btn.active {
+    background: var(--gold);
+    color: var(--text-dark);
+    border: none;
+  }
+
+  .edit-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid oklch(75% 0.16 75 / 0.5);
+    color: var(--gold);
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .edit-btn.active {
+    background: var(--gold);
+    color: var(--text-dark);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  th {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 2px solid oklch(100% 0 0 / 0.12);
+    color: var(--muted);
+  }
+  td {
+    padding: 14px 16px;
+    border-bottom: 1px solid oklch(100% 0 0 / 0.07);
+    line-height: 1.4;
+    color: oklch(75% 0.01 240);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num {
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+  td strong { color: var(--offwhite); }
+
+  .cc-inp {
+    background: none;
+    border: none;
+    border-bottom: 2px solid oklch(75% 0.16 75 / 0.5);
+    color: oklch(75% 0.01 240);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    width: 120px;
+    padding: 2px 0;
+    text-align: right;
+    outline: none;
+  }
+  .cc-inp:focus { border-bottom-color: var(--gold); }
+
+  .source-row td {
+    background: oklch(75% 0.16 75 / 0.08);
+    border-bottom: none;
+    font-size: 13px;
+    color: oklch(65% 0.02 240);
+  }
+
+  .footnote {
+    margin-top: 24px;
+    font-size: 14px;
+    color: oklch(45% 0.02 240);
+    line-height: 1.8;
+  }
+
+  .meta {
+    margin-top: 48px;
+    font-size: 13px;
+    color: oklch(40% 0.02 240);
+    font-family: var(--font-mono);
+  }
+  .meta a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .meta a:hover { color: var(--gold); }
+
+  @media (max-width: 700px) {
+    table { font-size: 13px; }
+    th, td { padding: 10px 8px; }
+    .cc-inp { width: 80px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="index.html" class="back-link">&larr; Back to overview</a>
+  <h1>Cloud-Native SDI Cost Calculator</h1>
+  <p class="subtitle">
+    Only two costs: <strong style="color:var(--offwhite);">storage</strong> and <strong style="color:var(--offwhite);">egress</strong>. Click <em>Edit</em> to adjust estimates and compare providers.
+  </p>
+
+  <div class="controls">
+    <span class="provider-label">Provider:</span>
+    <button class="prov-btn active" data-p="leaseweb" onclick="ccSetProvider('leaseweb')">Leaseweb</button>
+    <button class="prov-btn" data-p="hetzner" onclick="ccSetProvider('hetzner')">Hetzner</button>
+    <button class="prov-btn" data-p="aws" onclick="ccSetProvider('aws')">AWS S3</button>
+    <button class="edit-btn" id="cc-edit-btn" onclick="ccToggleEdit()">Edit</button>
+  </div>
+
+  <table id="cc-table">
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Data</th>
+        <th>Size</th>
+        <th>Storage / mo.</th>
+        <th>Transfer / mo.</th>
+        <th>Egress / mo.</th>
+        <th>Total / mo.</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-row="0">
+        <td><strong>Municipality</strong></td>
+        <td>Vector (BAG, BGT, zoning)</td>
+        <td class="cc-size"></td>
+        <td class="num cc-stor"></td>
+        <td class="cc-xfer"></td>
+        <td class="num cc-egr"></td>
+        <td class="num cc-tot" style="color:var(--gold); font-weight:600;"></td>
+      </tr>
+      <tr data-row="1">
+        <td><strong>Province</strong></td>
+        <td>Vector + orthophoto</td>
+        <td class="cc-size"></td>
+        <td class="num cc-stor"></td>
+        <td class="cc-xfer"></td>
+        <td class="num cc-egr"></td>
+        <td class="num cc-tot" style="color:var(--gold); font-weight:600;"></td>
+      </tr>
+      <tr data-row="2">
+        <td><strong>National (PDOK-scale)</strong></td>
+        <td>All registrations + AHN + luchtfoto</td>
+        <td class="cc-size"></td>
+        <td class="num cc-stor"></td>
+        <td class="cc-xfer"></td>
+        <td class="num cc-egr"></td>
+        <td class="num cc-tot" style="color:var(--gold); font-weight:600;"></td>
+      </tr>
+      <tr class="source-row">
+        <td colspan="6">Source Cooperative: free hosting for open government data</td>
+        <td class="num" style="color:var(--gold); font-weight:600;">€ 0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="cc-footnote" class="footnote"></div>
+
+  <div class="meta">
+    Part of <a href="index.html">Cloud-Native SDI — Open Geodag 2026</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  const providers = {
+    leaseweb: {
+      label: 'Leaseweb Object Storage (Dutch, S3-compatible)',
+      storPerGB: 0.017, egrPerGB: 0.0022,
+      baseMonthly: 0, inclStorGB: 0, inclEgrGB: 0,
+      detail: '€0.017/GB/mo storage · €0.0022/GB egress'
+    },
+    hetzner: {
+      label: 'Hetzner Object Storage (German/EU, S3-compatible)',
+      storPerGB: 0.005, egrPerGB: 0.001,
+      baseMonthly: 6.49, inclStorGB: 1024, inclEgrGB: 1024,
+      detail: '€6.49/mo base (1 TB storage + 1 TB egress incl.) · €0.005/GB overage storage · €0.001/GB overage egress'
+    },
+    aws: {
+      label: 'AWS S3 eu-west-1',
+      storPerGB: 0.023,
+      tieredEgress: [
+        { upToGB: 100, perGB: 0 },
+        { upToGB: 10240, perGB: 0.09 },
+        { upToGB: 51200, perGB: 0.085 },
+        { upToGB: 153600, perGB: 0.07 },
+        { upToGB: Infinity, perGB: 0.05 }
+      ],
+      baseMonthly: 0, inclStorGB: 0, inclEgrGB: 0,
+      detail: '$0.023/GB/mo storage · egress tiered: $0.09 → $0.05/GB — prices in USD'
+    }
+  };
+
+  const rows = [
+    { sizeGB: 2, xferGB: 200 },
+    { sizeGB: 3072, xferGB: 10240 },
+    { sizeGB: 81920, xferGB: 2097152 }
+  ];
+
+  let curProvider = 'leaseweb';
+  let editing = false;
+
+  function toGB(val, unit) {
+    if (unit === 'PB') return val * 1024 * 1024;
+    if (unit === 'TB') return val * 1024;
+    return val;
+  }
+
+  function fmtSize(gb) {
+    if (gb >= 1024 * 1024) return (gb / (1024*1024)).toFixed(gb % (1024*1024) === 0 ? 0 : 1) + ' PB';
+    if (gb >= 1024) return (gb / 1024).toFixed(gb % 1024 === 0 ? 0 : 1) + ' TB';
+    return gb + ' GB';
+  }
+
+  function fmtEur(v) {
+    if (v >= 1000) return '€ ' + v.toLocaleString('en', {maximumFractionDigits:0});
+    if (v >= 10) return '€ ' + v.toFixed(0);
+    if (v >= 1) return '€ ' + v.toFixed(1);
+    return '€ ' + v.toFixed(2);
+  }
+
+  function calc(sizeGB, xferGB, p) {
+    let stor = p.baseMonthly + Math.max(0, sizeGB - p.inclStorGB) * p.storPerGB;
+    let billableGB = Math.max(0, xferGB - (p.inclEgrGB || 0));
+    let egr = 0;
+    if (p.tieredEgress) {
+      let remaining = billableGB;
+      let prev = 0;
+      for (const tier of p.tieredEgress) {
+        const tierGB = tier.upToGB - prev;
+        const used = Math.min(remaining, tierGB);
+        egr += used * tier.perGB;
+        remaining -= used;
+        prev = tier.upToGB;
+        if (remaining <= 0) break;
+      }
+    } else {
+      egr = billableGB * p.egrPerGB;
+    }
+    return { stor, egr, total: stor + egr };
+  }
+
+  function renderCosts() {
+    const p = providers[curProvider];
+    const trs = document.querySelectorAll('#cc-table tr[data-row]');
+    trs.forEach((tr, i) => {
+      const r = rows[i];
+      const c = calc(r.sizeGB, r.xferGB, p);
+      tr.querySelector('.cc-stor').textContent = fmtEur(c.stor);
+      tr.querySelector('.cc-egr').textContent = fmtEur(c.egr);
+      tr.querySelector('.cc-tot').textContent = '~' + fmtEur(c.total);
+    });
+    document.getElementById('cc-footnote').innerHTML =
+      'Priced on ' + p.label + ': ' + p.detail + '<br>' +
+      'National estimate: AHN ~25 TB, luchtfoto ~40 TB, vector registrations ~500 GB, overhead ~15 TB · No server compute, licensing, or staffing costs';
+  }
+
+  function render() {
+    document.querySelectorAll('.prov-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.p === curProvider);
+    });
+    const trs = document.querySelectorAll('#cc-table tr[data-row]');
+    trs.forEach((tr, i) => {
+      const r = rows[i];
+      const sizeCell = tr.querySelector('.cc-size');
+      const xferCell = tr.querySelector('.cc-xfer');
+      if (editing) {
+        if (!sizeCell.querySelector('input')) {
+          sizeCell.innerHTML = '<input class="cc-inp" data-row="'+i+'" data-field="size" value="'+fmtSize(r.sizeGB)+'">';
+          xferCell.innerHTML = '<input class="cc-inp" data-row="'+i+'" data-field="xfer" value="'+fmtSize(r.xferGB)+'">';
+          sizeCell.querySelectorAll('.cc-inp').forEach(attachInput);
+          xferCell.querySelectorAll('.cc-inp').forEach(attachInput);
+        }
+      } else {
+        sizeCell.textContent = '~' + fmtSize(r.sizeGB);
+        xferCell.textContent = '~' + fmtSize(r.xferGB);
+      }
+    });
+    renderCosts();
+  }
+
+  function parseSize(str) {
+    str = str.replace(/[~,]/g, '').trim();
+    const m = str.match(/^([\d.]+)\s*(PB|TB|GB)?$/i);
+    if (!m) return null;
+    const val = parseFloat(m[1]);
+    const unit = (m[2] || 'GB').toUpperCase();
+    return toGB(val, unit);
+  }
+
+  function attachInput(inp) {
+    inp.addEventListener('input', function() {
+      const ri = parseInt(this.dataset.row);
+      const gb = parseSize(this.value);
+      if (gb === null || gb <= 0) return;
+      if (this.dataset.field === 'size') rows[ri].sizeGB = gb;
+      else rows[ri].xferGB = gb;
+      renderCosts();
+    });
+    inp.addEventListener('blur', function() {
+      const ri = parseInt(this.dataset.row);
+      const gb = parseSize(this.value);
+      if (gb === null || gb <= 0) { this.value = fmtSize(rows[ri][this.dataset.field === 'size' ? 'sizeGB' : 'xferGB']); }
+      else this.value = fmtSize(gb);
+      renderCosts();
+    });
+  }
+
+  window.ccSetProvider = function(k) { curProvider = k; render(); };
+  window.ccToggleEdit = function() {
+    editing = !editing;
+    const btn = document.getElementById('cc-edit-btn');
+    btn.textContent = editing ? 'Done' : 'Edit';
+    btn.classList.toggle('active', editing);
+    render();
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>
